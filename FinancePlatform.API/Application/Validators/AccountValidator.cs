@@ -1,26 +1,24 @@
-﻿using FinancePlatform.API.Domain.Entities;
-
-namespace FinancePlatform.API.Application.Validators
+﻿namespace FinancePlatform.API.Application.Validators
 {
     public class AccountValidator
     {
-        public ValidationResult ValidateDeposit(decimal amount)
+        public bool ValidateDeposit(decimal amount)
         {
             if (amount < 1)
-                return new ValidationResult(false, "O valor do depósito deve ser maior que zero.");
+                return false;
 
-            return new ValidationResult(true, null);
+            return true;
         }
 
-        public ValidationResult ValidateWithdraw(decimal amount, decimal balance)
+        public bool ValidateWithdraw(decimal amount, decimal balance)
         {
             if (amount < 1)
-                return new ValidationResult(false, "O valor do saque deve ser maior que zero.");
+                return false;
 
             if (amount > balance)
-                return new ValidationResult(false, "Saldo insuficiente para saque.");
+                return false;
 
-            return new ValidationResult(true, null);
+            return true;
         }
     }
 }

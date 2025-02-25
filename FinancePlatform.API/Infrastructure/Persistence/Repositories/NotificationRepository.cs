@@ -21,14 +21,16 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
         {
             return await _context.Notifications.ToListAsync();
         }
-        public void Add(Notification notification)
+        public async Task<Notification> Add(Notification notification)
         {
             _context.Notifications.Add(notification);
+            return notification;
         }
 
-        public void Update(Notification notification)
+        public async Task<Notification> Update(Notification notification)
         {
             _context.Notifications.Update(notification);
+            return notification;
         }
 
         public void Delete(Notification notification)
