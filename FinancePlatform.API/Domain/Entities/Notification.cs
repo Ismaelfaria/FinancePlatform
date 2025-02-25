@@ -1,4 +1,6 @@
-﻿namespace FinancePlatform.API.Domain.Entities
+﻿using FinancePlatform.API.Domain.Enums;
+
+namespace FinancePlatform.API.Domain.Entities
 {
     public class Notification
     {
