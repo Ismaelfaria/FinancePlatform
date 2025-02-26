@@ -13,7 +13,6 @@ namespace FinancePlatform.API.Application.Messaging
 
         public bool PublishMessageToQueue(string exchange, string routingKey, string message)
         {
-            
             return _messageProcessor.PublishMessage(exchange, routingKey, message);
         }
     }

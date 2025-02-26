@@ -6,8 +6,8 @@ namespace FinancePlatform.API.Application.Interfaces.Repositories
     {
         public Task<Payment> FindByIdAsync(Guid id);
         public Task<List<Payment>> FindAllAsync();
-        public void Add(Payment payment);
-        public void Update(Payment payment);
-        public void Delete(Payment payment);
+        public Task<Payment> AddAsync(Payment payment);
+        public Task<Payment> UpdateAsync(Payment payment);
+        public bool Delete(Payment payment);
     }
 }

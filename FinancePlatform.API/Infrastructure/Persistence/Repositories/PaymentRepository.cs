@@ -17,23 +17,28 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
         {
             return await _context.Payments.FirstOrDefaultAsync(a => a.Id == id);
         }
+
         public async Task<List<Payment>> FindAllAsync()
         {
             return await _context.Payments.ToListAsync();
         }
-        public void Add(Payment payment)
+
+        public async Task<Payment> AddAsync(Payment payment)
         {
             _context.Payments.Add(payment);
+            return payment;
         }
 
-        public void Update(Payment payment)
+        public async Task<Payment> UpdateAsync(Payment payment)
         {
             _context.Payments.Update(payment);
+            return payment;
         }
 
-        public void Delete(Payment payment)
+        public bool Delete(Payment payment)
         {
             _context.Payments.Remove(payment);
+            return true;
         }
     }
 }

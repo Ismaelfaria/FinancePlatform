@@ -6,8 +6,8 @@ namespace FinancePlatform.API.Application.Interfaces.Services
     {
         public Task<List<Account>> FindAllAccountsAsync();
         public Task<Account> FindByIdAsync(Guid id);
-        public Task<bool> CreateAccountAsync(Account account);
+        public Task<Account> CreateAccountAsync(Account account);
+        public Task<Account> UpdateAsync(Guid notificationId, Dictionary<string, object> updateRequest);
         public Task<bool> DeleteAccountAsync(Guid accountId);
-        public Task<Account> UpdateAsync(Guid accountId, Account account);
     }
 }

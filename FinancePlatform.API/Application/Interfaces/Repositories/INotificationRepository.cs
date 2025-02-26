@@ -8,6 +8,6 @@ namespace FinancePlatform.API.Application.Interfaces.Repositories
         public Task<List<Notification>> FindAllAsync();
         public Task<Notification> Add(Notification notification);
         public Task<Notification> Update(Notification notification);
-        public void Delete(Notification notification);
+        public bool Delete(Notification notification);
     }
 }

@@ -17,10 +17,12 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
         {
             return await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
         }
+
         public async Task<List<Account>> FindAllAsync()
         {
             return await _context.Accounts.ToListAsync();
         }
+
         public async Task<Account> AddAsync(Account account)
         {
             _context.Accounts.Add(account);
@@ -33,9 +35,10 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
             return account;
         }
 
-        public void Delete(Account account)
+        public bool Delete(Account account)
         {
             _context.Accounts.Remove(account);
+            return true;
         }
     }
 }

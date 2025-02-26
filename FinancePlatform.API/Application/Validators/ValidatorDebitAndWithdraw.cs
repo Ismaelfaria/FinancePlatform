@@ -1,6 +1,7 @@
-﻿namespace FinancePlatform.API.Application.Validators
+﻿
+namespace FinancePlatform.API.Application.Validators
 {
-    public class AccountValidator
+    public class ValidatorDebitAndWithdraw
     {
         public bool ValidateDeposit(decimal amount)
         {
@@ -12,11 +13,9 @@
 
         public bool ValidateWithdraw(decimal amount, decimal balance)
         {
-            if (amount < 1)
-                return false;
+            if (amount < 1) return false;
 
-            if (amount > balance)
-                return false;
+            if (amount > balance) return false;
 
             return true;
         }

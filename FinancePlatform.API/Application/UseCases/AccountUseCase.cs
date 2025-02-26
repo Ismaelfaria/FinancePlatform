@@ -1,14 +1,15 @@
 ﻿using FinancePlatform.API.Application.Interfaces.Repositories;
+using FinancePlatform.API.Application.Interfaces.UseCases;
 using FinancePlatform.API.Application.Validators;
 
 namespace FinancePlatform.API.Application.UseCases
 {
-    public class AccountUseCase
+    public class AccountUseCase : IAccountUseCase
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly AccountValidator _validator;
+        private readonly ValidatorDebitAndWithdraw _validator;
 
-        public AccountUseCase(IAccountRepository accountRepository, AccountValidator validator)
+        public AccountUseCase(IAccountRepository accountRepository, ValidatorDebitAndWithdraw validator)
         {
             _accountRepository = accountRepository;
             _validator = validator;
@@ -26,6 +27,7 @@ namespace FinancePlatform.API.Application.UseCases
             await _accountRepository.UpdateAsync(account);
             return true;
         }
+
         public async Task<decimal> FindBalance(Guid accountId)
         {
             var account = await _accountRepository.FindByIdAsync(accountId);

@@ -17,10 +17,12 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
         {
             return await _context.Notifications.FirstOrDefaultAsync(a => a.Id == id);
         }
+
         public async Task<List<Notification>> FindAllAsync()
         {
             return await _context.Notifications.ToListAsync();
         }
+
         public async Task<Notification> Add(Notification notification)
         {
             _context.Notifications.Add(notification);
@@ -33,9 +35,10 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
             return notification;
         }
 
-        public void Delete(Notification notification)
+        public bool Delete(Notification notification)
         {
             _context.Notifications.Remove(notification);
+            return true;
         }
     }
 }

@@ -1,18 +1,24 @@
 ﻿using FinancePlatform.API.Application.Interfaces.Repositories;
+using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
+using FluentValidation;
 
 namespace FinancePlatform.API.Application.Services
 {
-    public class AccountService
+    public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IValidator<Account> _validator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
 
-        public AccountService(IAccountRepository accountRepository, IEntityUpdateStrategy entityUpdateStrategy)
+        public AccountService(IAccountRepository accountRepository, 
+                              IEntityUpdateStrategy entityUpdateStrategy,
+                              IValidator<Account> validator)
         {
             _accountRepository = accountRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
+            _validator = validator;
         }
         public async Task<List<Account>> FindAllAccountsAsync()
         {
@@ -23,12 +29,13 @@ namespace FinancePlatform.API.Application.Services
             return await _accountRepository.FindByIdAsync(id);
         }
 
-        public async Task<bool> CreateAccountAsync(Account account)
+        public async Task<Account> CreateAccountAsync(Account account)
         {
-            if (account == null) return false;
+            var validator = _validator.Validate(account);
 
-            await _accountRepository.AddAsync(account);
-            return true;
+            if (!validator.IsValid) return null;
+
+            return await _accountRepository.AddAsync(account);
         }
         public async Task<Account> UpdateAsync(Guid accountId, Dictionary<string, object> updateRequest)
         {

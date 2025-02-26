@@ -21,19 +21,22 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
         {
             return await _context.Reconciliations.ToListAsync();
         }
-        public void Add(Reconciliation reconciliation)
+        public async Task<Reconciliation> AddAsync(Reconciliation reconciliation)
         {
             _context.Reconciliations.Add(reconciliation);
+            return reconciliation;
         }
 
-        public void Update(Reconciliation reconciliation)
+        public async Task<Reconciliation> UpdateAsync(Reconciliation reconciliation)
         {
             _context.Reconciliations.Update(reconciliation);
+            return reconciliation;
         }
 
-        public void Delete(Reconciliation reconciliation)
+        public bool Delete(Reconciliation reconciliation)
         {
             _context.Reconciliations.Remove(reconciliation);
+            return true;
         }
     }
 }

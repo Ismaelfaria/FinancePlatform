@@ -8,6 +8,6 @@ namespace FinancePlatform.API.Application.Interfaces.Repositories
         public Task<List<Account>> FindAllAsync();
         public Task<Account> AddAsync(Account account);
         public Task<Account> UpdateAsync(Account account);
-        public void Delete(Account account);
+        public bool Delete(Account account);
     }
 }
