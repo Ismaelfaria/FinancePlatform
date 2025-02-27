@@ -1,7 +1,10 @@
 ﻿using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.UseCases;
 using FinancePlatform.API.Domain.Entities;
+using FinancePlatform.API.Presentation.DTOs.InputModel;
 using FluentValidation;
+using Mapster;
+using MapsterMapper;
 
 namespace FinancePlatform.API.Application.UseCases
 {
@@ -10,18 +13,22 @@ namespace FinancePlatform.API.Application.UseCases
         private readonly IPaymentRepository _paymentRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IValidator<Payment> _validator;
+        private readonly IMapper _mapper;
 
         public PaymentUseCase(IPaymentRepository paymentRepository, 
                               IAccountRepository accountRepository,
-                              IValidator<Payment> validator)
+                              IValidator<Payment> validator,
+                              IMapper mapper)
         {
             _paymentRepository = paymentRepository;
             _accountRepository = accountRepository;
             _validator = validator;
+            _mapper = mapper;
         }
 
-        public async Task<Payment> generatePayment(Payment payment)
+        public async Task<Payment> generatePayment(PaymentInputModel model)
         {
+            var payment = model.Adapt<Payment>();
             var validator = _validator.Validate(payment);
 
             if (!validator.IsValid) return null;

@@ -2,7 +2,10 @@
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
+using FinancePlatform.API.Presentation.DTOs.InputModel;
 using FluentValidation;
+using Mapster;
+using MapsterMapper;
 
 namespace FinancePlatform.API.Application.Services
 {
@@ -11,14 +14,17 @@ namespace FinancePlatform.API.Application.Services
         private readonly IAccountRepository _accountRepository;
         private readonly IValidator<Account> _validator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
+        private readonly IMapper _mapper;
 
         public AccountService(IAccountRepository accountRepository, 
                               IEntityUpdateStrategy entityUpdateStrategy,
-                              IValidator<Account> validator)
+                              IValidator<Account> validator,
+                              IMapper mapper)
         {
             _accountRepository = accountRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _validator = validator;
+            _mapper = mapper;
         }
         public async Task<List<Account>> FindAllAccountsAsync()
         {
@@ -29,8 +35,9 @@ namespace FinancePlatform.API.Application.Services
             return await _accountRepository.FindByIdAsync(id);
         }
 
-        public async Task<Account> CreateAccountAsync(Account account)
+        public async Task<Account> CreateAccountAsync(AccountInputModel model)
         {
+            var account = model.Adapt<Account>();
             var validator = _validator.Validate(account);
 
             if (!validator.IsValid) return null;

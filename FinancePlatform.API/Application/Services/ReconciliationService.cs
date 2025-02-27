@@ -1,7 +1,10 @@
 ﻿using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
+using FinancePlatform.API.Presentation.DTOs.InputModel;
 using FluentValidation;
+using Mapster;
+using MapsterMapper;
 
 namespace FinancePlatform.API.Application.Services
 {
@@ -10,18 +13,22 @@ namespace FinancePlatform.API.Application.Services
         private readonly IReconciliationRepository _reconciliationRepository;
         private readonly IValidator<Reconciliation> _validator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
+        private readonly IMapper _mapper;
 
         public ReconciliationService(IReconciliationRepository reconciliationRepository,
                                      IEntityUpdateStrategy entityUpdateStrategy,
-                                     IValidator<Reconciliation> validator)
+                                     IValidator<Reconciliation> validator,
+                                     IMapper mapper)
         {
             _reconciliationRepository = reconciliationRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _validator = validator;
+            _mapper = mapper;
         }
 
-        public async Task<Reconciliation> CreateReconciliation(Reconciliation reconciliation)
+        public async Task<Reconciliation> CreateReconciliation(ReconciliationInputModel model)
         {
+            var reconciliation = model.Adapt<Reconciliation>();
             var validator = _validator.Validate(reconciliation);
 
             if (!validator.IsValid) return null;

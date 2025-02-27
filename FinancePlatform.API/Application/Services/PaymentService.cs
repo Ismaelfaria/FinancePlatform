@@ -2,6 +2,7 @@
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
+using MapsterMapper;
 
 namespace FinancePlatform.API.Application.Services
 {

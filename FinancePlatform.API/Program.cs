@@ -1,3 +1,4 @@
+using FinancePlatform.API.Application.Mapper;
 using FinancePlatform.API.Infrastructure.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMqSettings"));
 
+builder.Services.RegisterMaps();
 
 var app = builder.Build();
 

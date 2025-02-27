@@ -2,7 +2,10 @@
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
+using FinancePlatform.API.Presentation.DTOs.InputModel;
 using FluentValidation;
+using Mapster;
+using MapsterMapper;
 
 namespace FinancePlatform.API.Application.Services
 {
@@ -11,14 +14,17 @@ namespace FinancePlatform.API.Application.Services
         private readonly INotificationRepository _notificationRepository;
         private readonly IValidator<Notification> _validator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
+        private readonly IMapper _mapper;
 
         public NotificationService(INotificationRepository notificationRepository, 
                                    IEntityUpdateStrategy entityUpdateStrategy,
-                                   IValidator<Notification> validator)
+                                   IValidator<Notification> validator,
+                                   IMapper mapper)
         {
             _notificationRepository = notificationRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _validator = validator;
+            _mapper = mapper;
         }
 
         public async Task<Notification?> GetNotificationByIdAsync(Guid idNotification)
@@ -31,8 +37,9 @@ namespace FinancePlatform.API.Application.Services
             return await _notificationRepository.FindAllAsync();
         }
 
-        public async Task<Notification> CreateNotificationAsync(Notification notification)
+        public async Task<Notification> CreateNotificationAsync(NotificationInputModel model)
         {
+            var notification = model.Adapt<Notification>();
             var validator = _validator.Validate(notification);
 
             if (!validator.IsValid) return null;
