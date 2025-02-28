@@ -2,6 +2,7 @@
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
+using FinancePlatform.API.Presentation.DTOs.ViewModel;
 using MapsterMapper;
 
 namespace FinancePlatform.API.Application.Services
@@ -10,22 +11,29 @@ namespace FinancePlatform.API.Application.Services
     {
         private readonly IPaymentRepository _paymentRepository;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
+        private readonly IMapper _mapper;
 
         public PaymentService(IPaymentRepository paymentRepository,
-                              IEntityUpdateStrategy entityUpdateStrategy)
+                              IEntityUpdateStrategy entityUpdateStrategy,
+                              IMapper mapper)
         {
             _paymentRepository = paymentRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
+            _mapper = mapper;
         }
 
-        public async Task<Payment> GetPaymentByIdAsync(Guid id)
+        public async Task<PaymentViewModel> GetPaymentByIdAsync(Guid id)
         {
-            return await _paymentRepository.FindByIdAsync(id);
+            var payment = await _paymentRepository.FindByIdAsync(id);
+
+            return _mapper.Map<PaymentViewModel>(payment);
         }
 
-        public async Task<List<Payment>> GetAllPaymentsAsync()
+        public async Task<List<PaymentViewModel>> GetAllPaymentsAsync()
         {
-            return await _paymentRepository.FindAllAsync();
+            var payments = await _paymentRepository.FindAllAsync();
+
+            return _mapper.Map<List<PaymentViewModel>>(payments);
         }
 
         public async Task<Payment> UpdatePaymentAsync(Guid paymentId, Dictionary<string, object> updateRequest)

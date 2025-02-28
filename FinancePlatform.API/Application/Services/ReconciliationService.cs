@@ -2,6 +2,7 @@
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.InputModel;
+using FinancePlatform.API.Presentation.DTOs.ViewModel;
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
@@ -36,14 +37,18 @@ namespace FinancePlatform.API.Application.Services
             return await _reconciliationRepository.AddAsync(reconciliation);
         }
 
-        public async Task<Reconciliation> GetReconciliationByIdAsync(Guid id)
+        public async Task<ReconciliationViewModel> GetReconciliationByIdAsync(Guid id)
         {
-            return await _reconciliationRepository.FindByIdAsync(id);
+            var reconciliation = await _reconciliationRepository.FindByIdAsync(id);
+
+            return _mapper.Map<ReconciliationViewModel>(reconciliation);
         }
 
-        public async Task<List<Reconciliation>> GetAllReconciliationsAsync()
+        public async Task<List<ReconciliationViewModel>> GetAllReconciliationsAsync()
         {
-            return await _reconciliationRepository.FindAllAsync();
+            var reconciliations = await _reconciliationRepository.FindAllAsync();
+
+            return _mapper.Map<List<ReconciliationViewModel>>(reconciliations);
         }
 
         public async Task<Reconciliation> UpdateReconciliationAsync(Guid reconciliationId, Dictionary<string, object> updateRequest)

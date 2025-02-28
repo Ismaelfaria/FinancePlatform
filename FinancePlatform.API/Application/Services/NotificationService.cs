@@ -3,9 +3,11 @@ using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.InputModel;
+using FinancePlatform.API.Presentation.DTOs.ViewModel;
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
+using System.Security.Principal;
 
 namespace FinancePlatform.API.Application.Services
 {
@@ -27,14 +29,18 @@ namespace FinancePlatform.API.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<Notification?> GetNotificationByIdAsync(Guid idNotification)
+        public async Task<NotificationViewModel?> GetNotificationByIdAsync(Guid idNotification)
         {
-            return await _notificationRepository.FindByIdAsync(idNotification);
+            var notification = await _notificationRepository.FindByIdAsync(idNotification);
+
+            return _mapper.Map<NotificationViewModel>(notification);
         }
 
-        public async Task<List<Notification>> GetAllNotificationsAsync()
+        public async Task<List<NotificationViewModel>> GetAllNotificationsAsync()
         {
-            return await _notificationRepository.FindAllAsync();
+            var notifications = await _notificationRepository.FindAllAsync();
+
+            return _mapper.Map<List<NotificationViewModel>>(notifications);
         }
 
         public async Task<Notification> CreateNotificationAsync(NotificationInputModel model)

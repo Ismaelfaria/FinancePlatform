@@ -3,6 +3,7 @@ using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.InputModel;
+using FinancePlatform.API.Presentation.DTOs.ViewModel;
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
@@ -26,13 +27,17 @@ namespace FinancePlatform.API.Application.Services
             _validator = validator;
             _mapper = mapper;
         }
-        public async Task<List<Account>> FindAllAccountsAsync()
+        public async Task<List<AccountViewModel>> FindAllAccountsAsync()
         {
-            return await _accountRepository.FindAllAsync();
+            var accounts = await _accountRepository.FindAllAsync();
+
+            return _mapper.Map<List<AccountViewModel>>(accounts);
         }
-        public async Task<Account> FindByIdAsync(Guid id)
+        public async Task<AccountViewModel> FindByIdAsync(Guid id)
         {
-            return await _accountRepository.FindByIdAsync(id);
+            var account = await _accountRepository.FindByIdAsync(id);
+
+            return _mapper.Map<AccountViewModel>(account);
         }
 
         public async Task<Account> CreateAccountAsync(AccountInputModel model)
