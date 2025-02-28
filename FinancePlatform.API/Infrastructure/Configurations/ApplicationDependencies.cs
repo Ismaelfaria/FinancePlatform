@@ -13,7 +13,7 @@ using FinancePlatform.API.Infrastructure.Persistence.Repositories;
 using FluentValidation;
 using MapsterMapper;
 
-namespace FinancePlatform.API.Application.Configurations
+namespace FinancePlatform.API.Infrastructure.Configurations
 {
     public static class ApplicationDependencies
     {
@@ -34,9 +34,6 @@ namespace FinancePlatform.API.Application.Configurations
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
-
-            // UnitOfWork
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Estratégias de Atualização
             services.AddScoped<IEntityUpdateStrategy, EntityUpdateStrategy>();

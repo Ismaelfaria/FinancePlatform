@@ -9,7 +9,8 @@ namespace FinancePlatform.API.Application.Validators
         {
             RuleFor(a => a.HolderName)
                 .NotEmpty().WithMessage("O nome do titular é obrigatório")
-                .Length(3, 100).WithMessage("O nome do titular deve ter entre 3 e 100 caracteres");
+                .Length(3, 100).WithMessage("O nome do titular deve ter entre 3 e 100 caracteres")
+                .Matches("^[a-zA-Z0-9]*$").WithMessage("Username deve conter apenas caracteres alfanuméricos.");
 
             RuleFor(a => a.AccountNumber)
                 .NotEmpty().WithMessage("O número da conta é obrigatório")

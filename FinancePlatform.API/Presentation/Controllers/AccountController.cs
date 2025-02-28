@@ -37,7 +37,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Obtém uma conta pelo ID
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<AccountViewModel>> GetAccountById(Guid id)
+        public async Task<ActionResult<AccountViewModel>> GetAccountById([FromForm] Guid id)
         {
             var account = await _accountService.FindByIdAsync(id);
             if (account == null) 
@@ -50,7 +50,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Cria uma nova conta
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<AccountViewModel>> CreateAccount([FromBody] AccountInputModel model)
+        public async Task<ActionResult<AccountViewModel>> CreateAccount([FromForm] AccountInputModel model)
         {
             var createdAccount = await _accountService.CreateAccountAsync(model);
             if (createdAccount == null) return BadRequest("Falha na validação dos dados.");
@@ -61,8 +61,8 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// <summary>
         /// Atualiza parcialmente uma conta
         /// </summary>
-        [HttpPatch("{id}")]
-        public async Task<ActionResult<AccountViewModel>> UpdateAccount(Guid id, [FromBody] Dictionary<string, object> updateRequest)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<AccountViewModel>> UpdateAccount([FromForm] Guid id, Dictionary<string, object> updateRequest)
         {
             if (updateRequest == null || updateRequest.Count == 0)
                 return BadRequest("Nenhum dado fornecido para atualização.");
@@ -77,7 +77,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Exclui uma conta pelo ID
         /// </summary>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAccount(Guid id)
+        public async Task<ActionResult> DeleteAccount([FromForm] Guid id)
         {
             var deleted = await _accountService.DeleteAccountAsync(id);
             if (!deleted) return NotFound("Conta não encontrada.");
@@ -89,7 +89,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Deposite em uma conta pelo ID e valor a ser depositado
         /// </summary>
         [HttpPost("deposit/{accountId}")]
-        public async Task<IActionResult> Deposit(Guid accountId, [FromBody] decimal amount)
+        public async Task<IActionResult> Deposit([FromForm] Guid accountId, decimal amount)
         {
             var result = await _accountUseCase.Deposit(accountId, amount);
             if (!result) return BadRequest("Depósito não realizado. Verifique o valor ou a conta.");

@@ -1,9 +1,6 @@
-﻿using FinancePlatform.API.Application.Exceptions;
-using FinancePlatform.API.Application.Interfaces.Messaging;
+﻿using FinancePlatform.API.Application.Interfaces.Messaging;
 using RabbitMQ.Client;
-using System;
 using System.Text;
-using System.Threading.Channels;
 
 namespace FinancePlatform.API.Infrastructure.Messaging
 {

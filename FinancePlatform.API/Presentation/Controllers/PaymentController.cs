@@ -50,7 +50,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Gera um novo pagamento com base nos dados fornecidos.
         /// </summary>
         [HttpPost("generate")]
-        public async Task<ActionResult<Payment>> GeneratePayment([FromBody] PaymentInputModel model)
+        public async Task<ActionResult<Payment>> GeneratePayment([FromForm] PaymentInputModel model)
         {
             if (model == null)
                 return BadRequest("Dados do pagamento são obrigatórios.");
@@ -66,7 +66,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Atualiza um pagamento pelo ID.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Dictionary<string, object> updateRequest)
+        public async Task<IActionResult> Update(Guid id, [FromForm] Dictionary<string, object> updateRequest)
         {
             if (updateRequest == null || updateRequest.Count == 0)
                 return BadRequest("Nenhum dado fornecido para atualização.");

@@ -21,7 +21,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Cria uma nova reconciliação financeira.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<Reconciliation>> Create([FromBody] ReconciliationInputModel model)
+        public async Task<ActionResult<Reconciliation>> Create([FromForm] ReconciliationInputModel model)
         {
             if (model == null)
                 return BadRequest("Os dados da reconciliação são obrigatórios.");
@@ -60,7 +60,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Atualiza uma reconciliação pelo ID.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Dictionary<string, object> updateRequest)
+        public async Task<IActionResult> Update(Guid id, [FromForm] Dictionary<string, object> updateRequest)
         {
             if (updateRequest == null || updateRequest.Count == 0)
                 return BadRequest("Nenhum dado fornecido para atualização.");

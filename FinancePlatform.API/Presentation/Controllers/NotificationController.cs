@@ -46,7 +46,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Cria uma nova notificação
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<NotificationViewModel>> Create([FromBody] NotificationInputModel model)
+        public async Task<ActionResult<NotificationViewModel>> Create([FromForm] NotificationInputModel model)
         {
             if (model == null)
                 return BadRequest("Dados inválidos.");
@@ -62,7 +62,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         /// Atualiza uma notificação pelo ID, e um JSON com 'chave - valor'
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Dictionary<string, object> updateRequest)
+        public async Task<IActionResult> Update(Guid id, [FromForm] Dictionary<string, object> updateRequest)
         {
             if (updateRequest == null || updateRequest.Count == 0)
                 return BadRequest("Nenhum dado para atualização.");
