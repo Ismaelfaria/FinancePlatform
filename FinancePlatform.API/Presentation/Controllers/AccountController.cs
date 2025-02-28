@@ -27,8 +27,8 @@ namespace FinancePlatform.API.Presentation.Controllers
         public async Task<ActionResult<List<AccountViewModel>>> GetAllAccounts()
         {
             var accounts = await _accountService.FindAllAccountsAsync();
-
-            if (accounts == null) return NotFound("Nenhuma conta encontrada.");
+            if (accounts == null) 
+                return NotFound("Nenhuma conta encontrada.");
 
             return Ok(accounts);
         }
@@ -40,7 +40,9 @@ namespace FinancePlatform.API.Presentation.Controllers
         public async Task<ActionResult<AccountViewModel>> GetAccountById(Guid id)
         {
             var account = await _accountService.FindByIdAsync(id);
-            if (account == null) return NotFound("Conta não encontrada.");
+            if (account == null) 
+                return NotFound("Conta não encontrada.");
+
             return Ok(account);
         }
 
@@ -62,6 +64,9 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult<AccountViewModel>> UpdateAccount(Guid id, [FromBody] Dictionary<string, object> updateRequest)
         {
+            if (updateRequest == null || updateRequest.Count == 0)
+                return BadRequest("Nenhum dado fornecido para atualização.");
+
             var updatedAccount = await _accountService.UpdateAsync(id, updateRequest);
             if (updatedAccount == null) return NotFound("Conta não encontrada.");
 

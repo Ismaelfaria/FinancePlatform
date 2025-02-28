@@ -1,7 +1,9 @@
 ﻿
+using FinancePlatform.API.Application.Interfaces.Validator;
+
 namespace FinancePlatform.API.Application.Validators
 {
-    public class ValidatorDebitAndWithdraw
+    public class ValidatorDebitAndWithdraw : IValidatorDebitAndWithdraw
     {
         public bool ValidateDeposit(decimal amount)
         {

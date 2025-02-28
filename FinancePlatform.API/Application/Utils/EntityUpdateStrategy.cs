@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace FinancePlatform.API.Application.Utils
 {
-    public class ReflectionUpdateStrategy : IEntityUpdateStrategy
+    public class EntityUpdateStrategy : IEntityUpdateStrategy
     {
         public void UpdateEntityFields<T>(T entity, Dictionary<string, object> updateRequest)
         {

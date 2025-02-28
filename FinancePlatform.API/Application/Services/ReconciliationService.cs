@@ -1,4 +1,5 @@
 ﻿using FinancePlatform.API.Application.Interfaces.Repositories;
+using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.InputModel;
@@ -9,7 +10,7 @@ using MapsterMapper;
 
 namespace FinancePlatform.API.Application.Services
 {
-    public class ReconciliationService
+    public class ReconciliationService : IReconciliationService
     {
         private readonly IReconciliationRepository _reconciliationRepository;
         private readonly IValidator<Reconciliation> _validator;

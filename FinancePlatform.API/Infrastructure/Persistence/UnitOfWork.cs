@@ -3,7 +3,7 @@ using FinancePlatform.API.Infrastructure.Persistence.Repositories;
 
 namespace FinancePlatform.API.Infrastructure.Persistence
 {
-    public class UnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly FinanceDbContext _context;
 
@@ -27,7 +27,7 @@ namespace FinancePlatform.API.Infrastructure.Persistence
         {
             _context.SaveChanges();
         }
-
+        
         public void Rollback()
         {
             foreach (var entry in _context.ChangeTracker.Entries())
