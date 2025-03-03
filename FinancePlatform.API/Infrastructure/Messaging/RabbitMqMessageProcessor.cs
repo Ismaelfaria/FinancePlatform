@@ -7,13 +7,10 @@ namespace FinancePlatform.API.Infrastructure.Messaging
     public class RabbitMqMessageProcessor : IMessageProcessor
     {
         private readonly RabbitMqConnectionFactory _connectionFactory;
-        private readonly RabbitMqSettings _rabbitMqSettings;
-        private IConnection _connection;
         private IModel _channel;
 
-        public RabbitMqMessageProcessor(RabbitMqSettings rabbitMqSettings, RabbitMqConnectionFactory connectionFactory)
+        public RabbitMqMessageProcessor(RabbitMqConnectionFactory connectionFactory)
         {
-            _rabbitMqSettings = rabbitMqSettings;
             _connectionFactory = connectionFactory;
         }
 

@@ -1,5 +1,6 @@
 ﻿using FinancePlatform.API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace FinancePlatform.API.Infrastructure.Configurations
@@ -8,8 +9,7 @@ namespace FinancePlatform.API.Infrastructure.Configurations
     {
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            // Recupera a string de conexão definida no appsettings.json
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("MySqlConnection");
             services.AddDbContext<FinanceDbContext>(options =>
                 options.UseSqlServer(connectionString));
             return services;
@@ -32,7 +32,6 @@ namespace FinancePlatform.API.Infrastructure.Configurations
                     }
                 });
 
-                // Opcional: incluir comentários XML para enriquecer a documentação
                 var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 if (File.Exists(xmlPath))
@@ -40,6 +39,17 @@ namespace FinancePlatform.API.Infrastructure.Configurations
                     c.IncludeXmlComments(xmlPath);
                 }
             });
+            return services;
+        }
+
+        public static IServiceCollection AddCacheConfiguration(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration.GetSection("RedisConnection").Value;
+                options.InstanceName = "RedisCacheSettings:InstanceName"; 
+            });
+
             return services;
         }
     }

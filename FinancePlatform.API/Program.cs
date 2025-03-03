@@ -1,19 +1,20 @@
 using FinancePlatform.API.Application.Mapper;
 using FinancePlatform.API.Infrastructure.Messaging;
-using FinancePlatform.API.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using FinancePlatform.API.Infrastructure.Configurations;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Adiciona os serviços da aplicação (Use Cases, Repositórios, Validators, etc.)
+builder.Services.AddApplicationDependencies();
 
-builder.Services.AddDbContext<FinanceDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.AddCustomDbContext(builder.Configuration);
+builder.Services.AddSwaggerConfiguration();
+builder.Services.AddCacheConfiguration(builder.Configuration);
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMqSettings"));
