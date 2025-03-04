@@ -6,6 +6,8 @@ using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.ViewModel;
 using FluentValidation;
 using MapsterMapper;
+using Microsoft.Identity.Client;
+using System.Security.Principal;
 
 namespace FinancePlatform.API.Application.Services
 {
@@ -13,55 +15,102 @@ namespace FinancePlatform.API.Application.Services
     {
         private readonly IPaymentRepository _paymentRepository;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
-        private readonly IValidator<Payment> _validator;
         private readonly IMapper _mapper;
+        private readonly IValidator<Guid> _guidValidator;
         private readonly CacheService _cacheService;
 
         public PaymentService(IPaymentRepository paymentRepository,
                               IEntityUpdateStrategy entityUpdateStrategy,
                               IMapper mapper,
-                              CacheService cacheService,
-                              IValidator<Payment> validator)
+                              IValidator<Guid> guidValidator,
+                              CacheService cacheService)
         {
             _paymentRepository = paymentRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
-            _validator = validator;
+            _guidValidator = guidValidator;
             _mapper = mapper;
             _cacheService = cacheService;
         }
 
-        public async Task<PaymentViewModel?> GetPaymentByIdAsync(Guid id)
+        public async Task<PaymentViewModel?> GetPaymentByIdAsync(Guid paymentId)
         {
-            var payment = await _paymentRepository.FindByIdAsync(id);
+            var validationResult = _guidValidator.Validate(paymentId);
 
-            return _mapper.Map<PaymentViewModel>(payment);
+            if (!validationResult.IsValid) return null;
+
+            string paymentCacheKey = $"payment:{paymentId}";
+
+            var cachedPayment = await _cacheService.GetAsync<Account>(paymentCacheKey);
+            if (cachedPayment != null)
+            {
+                return _mapper.Map<PaymentViewModel>(cachedPayment);
+            }
+
+            var existingPayment = await _paymentRepository.FindByIdAsync(paymentId);
+            if (existingPayment == null) return null;
+
+            await _cacheService.SetAsync(paymentCacheKey, existingPayment);
+
+            return _mapper.Map<PaymentViewModel>(existingPayment);
         }
 
         public async Task<List<PaymentViewModel>?> GetAllPaymentsAsync()
         {
-            var payments = await _paymentRepository.FindAllAsync();
+            string paymentListCacheKey = "payment:list";
 
-            return _mapper.Map<List<PaymentViewModel>>(payments);
+            var cachedPayments = await _cacheService.GetAsync<List<Account>>(paymentListCacheKey);
+            if (cachedPayments != null)
+            {
+                return _mapper.Map<List<PaymentViewModel>>(cachedPayments);
+            }
+
+            var existingPayments = await _paymentRepository.FindAllAsync();
+            if (existingPayments == null || existingPayments.Count == 0)
+            {
+                return null;
+            }
+
+            await _cacheService.SetAsync(paymentListCacheKey, existingPayments);
+            return _mapper.Map<List<PaymentViewModel>>(existingPayments);
         }
 
         public async Task<Payment?> UpdatePaymentAsync(Guid paymentId, Dictionary<string, object> updateRequest)
         {
-            var paymentResult = await _paymentRepository.FindByIdAsync(paymentId);
-            if (paymentResult == null) return null;
+            var validationResult = _guidValidator.Validate(paymentId);
 
-            _entityUpdateStrategy.UpdateEntityFields(paymentResult, updateRequest);
+            if (!validationResult.IsValid) return null;
 
-            var paymentUpdate = await _paymentRepository.UpdateAsync(paymentResult);
+            var payment = await _paymentRepository.FindByIdAsync(paymentId);
+            
+            if (payment == null) return null;
 
-            return paymentUpdate;
+            var isUpdateSuccessful = _entityUpdateStrategy.UpdateEntityFields(payment, updateRequest);
+            
+            if (isUpdateSuccessful)
+            {
+                await _paymentRepository.UpdateAsync(payment);
+
+                string paymentCacheKey = $"payment:{paymentId}";
+                await _cacheService.UpdateCacheIfNeededAsync(paymentCacheKey, payment);
+            }
+            return payment;
         }
 
         public async Task<bool> DeletePaymentAsync(Guid paymentId)
         {
+            var validationResult = _guidValidator.Validate(paymentId);
+
+            if (!validationResult.IsValid) return false;
+
             var payment = await _paymentRepository.FindByIdAsync(paymentId);
+            
             if (payment == null) return false;
 
             _paymentRepository.Delete(payment);
+
+            string accountCacheKey = $"payment:{paymentId}";
+            await _cacheService.RemoveFromCacheIfNeededAsync<Account>(accountCacheKey);
+            
             return true;
         }
     }
