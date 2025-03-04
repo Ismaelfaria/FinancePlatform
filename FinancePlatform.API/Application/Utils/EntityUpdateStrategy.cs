@@ -5,9 +5,14 @@ namespace FinancePlatform.API.Application.Utils
 {
     public class EntityUpdateStrategy : IEntityUpdateStrategy
     {
-        public void UpdateEntityFields<T>(T entity, Dictionary<string, object> updateRequest)
+        public bool UpdateEntityFields<T>(T entity, Dictionary<string, object> updatedFields)
         {
-            foreach (var entry in updateRequest)
+            if(updatedFields == null || entity == null)
+            {
+                return false;
+            }
+
+            foreach (var entry in updatedFields)
             {
                 try
                 {
@@ -22,6 +27,8 @@ namespace FinancePlatform.API.Application.Utils
                     Console.WriteLine($"Erro ao atualizar campo {entry.Key}: {ex.Message}");
                 }
             }
+
+            return true;
         }
     }
 }

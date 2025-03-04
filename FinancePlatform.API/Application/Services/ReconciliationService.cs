@@ -28,7 +28,7 @@ namespace FinancePlatform.API.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<Reconciliation> CreateReconciliation(ReconciliationInputModel model)
+        public async Task<Reconciliation?> CreateReconciliation(ReconciliationInputModel model)
         {
             var reconciliation = model.Adapt<Reconciliation>();
             var validator = _validator.Validate(reconciliation);
@@ -38,21 +38,21 @@ namespace FinancePlatform.API.Application.Services
             return await _reconciliationRepository.AddAsync(reconciliation);
         }
 
-        public async Task<ReconciliationViewModel> GetReconciliationByIdAsync(Guid id)
+        public async Task<ReconciliationViewModel?> GetReconciliationByIdAsync(Guid id)
         {
             var reconciliation = await _reconciliationRepository.FindByIdAsync(id);
 
             return _mapper.Map<ReconciliationViewModel>(reconciliation);
         }
 
-        public async Task<List<ReconciliationViewModel>> GetAllReconciliationsAsync()
+        public async Task<List<ReconciliationViewModel>?> GetAllReconciliationsAsync()
         {
             var reconciliations = await _reconciliationRepository.FindAllAsync();
 
             return _mapper.Map<List<ReconciliationViewModel>>(reconciliations);
         }
 
-        public async Task<Reconciliation> UpdateReconciliationAsync(Guid reconciliationId, Dictionary<string, object> updateRequest)
+        public async Task<Reconciliation?> UpdateReconciliationAsync(Guid reconciliationId, Dictionary<string, object> updateRequest)
         {
             var reconciliationResult = await _reconciliationRepository.FindByIdAsync(reconciliationId);
             if (reconciliationResult == null) return null;

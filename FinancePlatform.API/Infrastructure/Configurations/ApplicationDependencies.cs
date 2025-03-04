@@ -1,9 +1,12 @@
-﻿using FinancePlatform.API.Application.Interfaces.Repositories;
+﻿using FinancePlatform.API.Application.Interfaces.Cache;
+using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.UseCases;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Application.Interfaces.Validator;
 using FinancePlatform.API.Application.Services;
+using FinancePlatform.API.Application.Services.Cache;
+using FinancePlatform.API.Application.Services.Cache.Utils;
 using FinancePlatform.API.Application.UseCases;
 using FinancePlatform.API.Application.Utils;
 using FinancePlatform.API.Application.Validators;
@@ -44,6 +47,9 @@ namespace FinancePlatform.API.Infrastructure.Configurations
             services.AddScoped<IValidator<Payment>, ValidatorPayment>();
             services.AddScoped<IValidator<Notification>, ValidatorNotification>();
             services.AddScoped<IValidatorDebitAndWithdraw, ValidatorDebitAndWithdraw>();
+
+            // Cache
+            services.AddScoped<ICacheService, CacheService>();
         }
     }
 }

@@ -67,7 +67,7 @@ namespace FinancePlatform.API.Presentation.Controllers
             if (updateRequest == null || updateRequest.Count == 0)
                 return BadRequest("Nenhum dado fornecido para atualização.");
 
-            var updatedAccount = await _accountService.UpdateAsync(id, updateRequest);
+            var updatedAccount = await _accountService.UpdateAccountAsync(id, updateRequest);
             if (updatedAccount == null) return NotFound("Conta não encontrada.");
 
             return Ok(updatedAccount);

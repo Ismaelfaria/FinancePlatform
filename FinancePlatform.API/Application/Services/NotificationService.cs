@@ -1,6 +1,7 @@
 ﻿using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
+using FinancePlatform.API.Application.Services.Cache;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.InputModel;
 using FinancePlatform.API.Presentation.DTOs.ViewModel;
@@ -17,16 +18,19 @@ namespace FinancePlatform.API.Application.Services
         private readonly IValidator<Notification> _validator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
+        private readonly CacheService _cacheService;
 
         public NotificationService(INotificationRepository notificationRepository, 
                                    IEntityUpdateStrategy entityUpdateStrategy,
                                    IValidator<Notification> validator,
-                                   IMapper mapper)
+                                   IMapper mapper,
+                                   CacheService cacheService)
         {
             _notificationRepository = notificationRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _validator = validator;
             _mapper = mapper;
+            _cacheService = cacheService;
         }
 
         public async Task<NotificationViewModel?> GetNotificationByIdAsync(Guid idNotification)
@@ -36,14 +40,14 @@ namespace FinancePlatform.API.Application.Services
             return _mapper.Map<NotificationViewModel>(notification);
         }
 
-        public async Task<List<NotificationViewModel>> GetAllNotificationsAsync()
+        public async Task<List<NotificationViewModel>?> GetAllNotificationsAsync()
         {
             var notifications = await _notificationRepository.FindAllAsync();
 
             return _mapper.Map<List<NotificationViewModel>>(notifications);
         }
 
-        public async Task<Notification> CreateNotificationAsync(NotificationInputModel model)
+        public async Task<Notification?> CreateNotificationAsync(NotificationInputModel model)
         {
             var notification = model.Adapt<Notification>();
             var validator = _validator.Validate(notification);
@@ -54,7 +58,7 @@ namespace FinancePlatform.API.Application.Services
             return notification;
         }
 
-        public async Task<Notification> UpdateAsync(Guid notificationId, Dictionary<string, object> updateRequest)
+        public async Task<Notification?> UpdateAsync(Guid notificationId, Dictionary<string, object> updateRequest)
         {
             Notification notification = await _notificationRepository.FindByIdAsync(notificationId);
             if (notification == null) return null;
