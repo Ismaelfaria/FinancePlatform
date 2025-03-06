@@ -1,4 +1,5 @@
-﻿using FinancePlatform.API.Application.Interfaces.Repositories;
+﻿using FinancePlatform.API.Application.Interfaces.Cache;
+using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Application.Services.Cache;
@@ -18,14 +19,14 @@ namespace FinancePlatform.API.Application.Services
         private readonly IValidator<Guid> _guidValidator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
-        private readonly CacheService _cacheService;
+        private readonly ICacheService _cacheService;
 
         public ReconciliationService(IReconciliationRepository reconciliationRepository,
                                      IEntityUpdateStrategy entityUpdateStrategy,
                                      IValidator<Guid> guidValidator,
                                      IValidator<Reconciliation> validator,
                                      IMapper mapper,
-                                     CacheService cacheService)
+                                     ICacheService cacheService)
         {
             _reconciliationRepository = reconciliationRepository;
             _entityUpdateStrategy = entityUpdateStrategy;

@@ -2,7 +2,7 @@
 
 namespace FinancePlatform.API.Application.Validators
 {
-    public class ValidatorGuid : AbstractValidator<Guid?>
+    public class ValidatorGuid : AbstractValidator<Guid>
     {
         public ValidatorGuid()
         {

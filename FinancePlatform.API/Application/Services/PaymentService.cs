@@ -1,4 +1,5 @@
-﻿using FinancePlatform.API.Application.Interfaces.Repositories;
+﻿using FinancePlatform.API.Application.Interfaces.Cache;
+using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Application.Services.Cache;
@@ -17,13 +18,13 @@ namespace FinancePlatform.API.Application.Services
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
         private readonly IValidator<Guid> _guidValidator;
-        private readonly CacheService _cacheService;
+        private readonly ICacheService _cacheService;
 
         public PaymentService(IPaymentRepository paymentRepository,
                               IEntityUpdateStrategy entityUpdateStrategy,
                               IMapper mapper,
                               IValidator<Guid> guidValidator,
-                              CacheService cacheService)
+                              ICacheService cacheService)
         {
             _paymentRepository = paymentRepository;
             _entityUpdateStrategy = entityUpdateStrategy;

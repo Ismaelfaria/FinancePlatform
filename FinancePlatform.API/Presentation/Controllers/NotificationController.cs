@@ -22,7 +22,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<NotificationViewModel>> GetById(Guid id)
         {
-            var notification = await _notificationService.GetNotificationByIdAsync(id);
+            var notification = await _notificationService.FindNotificationByIdAsync(id);
             if (notification == null) 
                 return NotFound();
 
@@ -35,7 +35,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult<List<NotificationViewModel>>> GetAll()
         {
-            var notifications = await _notificationService.GetAllNotificationsAsync();
+            var notifications = await _notificationService.FindAllNotificationsAsync();
             if (notifications == null) 
                 return NotFound("Nenhuma notificação encontrada.");
 

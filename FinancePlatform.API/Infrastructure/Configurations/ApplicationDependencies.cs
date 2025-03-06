@@ -6,12 +6,12 @@ using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Application.Interfaces.Validator;
 using FinancePlatform.API.Application.Services;
 using FinancePlatform.API.Application.Services.Cache;
-using FinancePlatform.API.Application.Services.Cache.Utils;
 using FinancePlatform.API.Application.UseCases;
 using FinancePlatform.API.Application.Utils;
 using FinancePlatform.API.Application.Validators;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Infrastructure.Persistence;
+using FluentValidation.AspNetCore;
 using FinancePlatform.API.Infrastructure.Persistence.Repositories;
 using FluentValidation;
 using MapsterMapper;
@@ -42,14 +42,20 @@ namespace FinancePlatform.API.Infrastructure.Configurations
             services.AddScoped<IEntityUpdateStrategy, EntityUpdateStrategy>();
 
             // Validators
-            services.AddScoped<IValidator<Account>, ValidatorAccount>();
-            services.AddScoped<IValidator<Reconciliation>, ValidatorReconciliation>();
-            services.AddScoped<IValidator<Payment>, ValidatorPayment>();
-            services.AddScoped<IValidator<Notification>, ValidatorNotification>();
-            services.AddScoped<IValidatorDebitAndWithdraw, ValidatorDebitAndWithdraw>();
+            services.AddTransient<IValidator<Account>, ValidatorAccount>();
+            services.AddTransient<IValidator<Guid>, ValidatorGuid>();
+            services.AddTransient<IValidator<Reconciliation>, ValidatorReconciliation>();
+            services.AddTransient<IValidator<Payment>, ValidatorPayment>();
+            services.AddTransient<IValidator<Notification>, ValidatorNotification>();
+            services.AddTransient<IValidatorDebitAndWithdraw, ValidatorDebitAndWithdraw>();
 
             // Cache
-            services.AddScoped<ICacheService, CacheService>();
+            services.AddScoped<ICacheService, CacheService>(); 
+            
+            services.AddValidatorsFromAssemblyContaining<Program>();
+
+
+
         }
     }
 }

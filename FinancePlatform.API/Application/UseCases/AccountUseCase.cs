@@ -1,5 +1,6 @@
 ﻿using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.UseCases;
+using FinancePlatform.API.Application.Interfaces.Validator;
 using FinancePlatform.API.Application.Validators;
 
 namespace FinancePlatform.API.Application.UseCases
@@ -7,9 +8,10 @@ namespace FinancePlatform.API.Application.UseCases
     public class AccountUseCase : IAccountUseCase
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly ValidatorDebitAndWithdraw _validator;
+        private readonly IValidatorDebitAndWithdraw _validator;
 
-        public AccountUseCase(IAccountRepository accountRepository, ValidatorDebitAndWithdraw validator)
+        public AccountUseCase(IAccountRepository accountRepository, 
+                              IValidatorDebitAndWithdraw validator)
         {
             _accountRepository = accountRepository;
             _validator = validator;

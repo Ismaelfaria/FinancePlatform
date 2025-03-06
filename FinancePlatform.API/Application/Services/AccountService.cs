@@ -19,14 +19,14 @@ namespace FinancePlatform.API.Application.Services
         private readonly IValidator<Guid> _guidValidator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
-        private readonly CacheService _cacheService;
+        private readonly ICacheService _cacheService;
 
         public AccountService(IAccountRepository accountRepository,
                               IEntityUpdateStrategy entityUpdateStrategy,
                               IValidator<Account> validator,
                               IValidator<Guid> guidValidator,
                               IMapper mapper,
-                              CacheService cacheService)
+                              ICacheService cacheService)
         {
             _accountRepository = accountRepository;
             _entityUpdateStrategy = entityUpdateStrategy;

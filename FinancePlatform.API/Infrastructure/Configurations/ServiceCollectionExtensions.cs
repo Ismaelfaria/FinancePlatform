@@ -7,13 +7,14 @@ namespace FinancePlatform.API.Infrastructure.Configurations
 {
     public static class ServiceCollectionExtensions
     {
+         /*
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("MySqlConnection");
             services.AddDbContext<FinanceDbContext>(options =>
                 options.UseSqlServer(connectionString));
             return services;
-        }
+        }*/
 
         public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
         {

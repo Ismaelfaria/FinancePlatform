@@ -13,7 +13,7 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<Account> FindByIdAsync(Guid id)
+        public async Task<Account?> FindByIdAsync(Guid id)
         {
             return await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
         }
@@ -25,7 +25,7 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
 
         public async Task<Account> AddAsync(Account account)
         {
-            _context.Accounts.Add(account);
+            await _context.Accounts.AddAsync(account);
             return account;
         }
 

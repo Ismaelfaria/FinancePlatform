@@ -39,7 +39,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ReconciliationViewModel>> GetById(Guid id)
         {
-            var reconciliation = await _reconciliationService.GetReconciliationByIdAsync(id);
+            var reconciliation = await _reconciliationService.FindReconciliationByIdAsync(id);
             if (reconciliation == null)
                 return NotFound();
 
@@ -52,7 +52,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ReconciliationViewModel>>> GetAll()
         {
-            var reconciliations = await _reconciliationService.GetAllReconciliationsAsync();
+            var reconciliations = await _reconciliationService.FindAllReconciliationsAsync();
             return Ok(reconciliations);
         }
 
