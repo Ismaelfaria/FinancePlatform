@@ -1,4 +1,5 @@
 ﻿using FinancePlatform.API.Infrastructure.Persistence;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -7,14 +8,23 @@ namespace FinancePlatform.API.Infrastructure.Configurations
 {
     public static class ServiceCollectionExtensions
     {
-         /*
+         
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MySqlConnection");
-            services.AddDbContext<FinanceDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            try
+            {
+                using (var connection = new SqlConnection("Server=localhost,1433;Database=FinanceDB;User Id=sa;Password=YourStrong!Passw0rd;"))
+                {
+                    connection.Open();
+                    Console.WriteLine("Conexão bem-sucedida!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro: {ex.Message}");
+            }
             return services;
-        }*/
+        }
 
         public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
         {
@@ -45,10 +55,13 @@ namespace FinancePlatform.API.Infrastructure.Configurations
 
         public static IServiceCollection AddCacheConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
+            var redisConnection = configuration.GetValue<string>("RedisCacheSettings:RedisConnection");
+            var instanceName = configuration.GetValue<string>("RedisCacheSettings:InstanceName");
+
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration.GetSection("RedisConnection").Value;
-                options.InstanceName = "RedisCacheSettings:InstanceName"; 
+                options.Configuration = redisConnection;  
+                options.InstanceName = instanceName;      
             });
 
             return services;
