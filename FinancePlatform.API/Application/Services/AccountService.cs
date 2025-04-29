@@ -39,22 +39,28 @@ namespace FinancePlatform.API.Application.Services
         {
             string accountListCacheKey = "accounts:list";
 
+            // Tenta obter a lista de contas do cache
             var cachedAccounts = await _cacheService.GetAsync<List<Account>>(accountListCacheKey);
             if (cachedAccounts != null)
             {
+                // Retorna a lista de contas mapeada para AccountViewModel
                 return _mapper.Map<List<AccountViewModel>>(cachedAccounts);
             }
 
+            // Caso o cache não exista, busca as contas do repositório
             var existingAccounts = await _accountRepository.FindAllAsync();
             if (existingAccounts == null || existingAccounts.Count == 0)
             {
                 return null;
             }
 
+            // Armazena a lista de contas no cache
             await _cacheService.SetAsync(accountListCacheKey, existingAccounts);
 
+            // Retorna a lista de contas mapeada para AccountViewModel
             return _mapper.Map<List<AccountViewModel>>(existingAccounts);
         }
+
 
         public async Task<AccountViewModel?> FindByIdAsync(Guid accountId)
         {
@@ -86,18 +92,27 @@ namespace FinancePlatform.API.Application.Services
             var account = model.Adapt<Account>();
             var validationResult = _validator.Validate(account);
 
-            if (!validationResult.IsValid) return null;
+            if (!validationResult.IsValid)
+                return null;
 
+            // Adiciona a conta ao repositório
             var createdAccount = await _accountRepository.AddAsync(account);
 
             if (createdAccount != null)
             {
+                // Chaves específicas para a conta criada
                 string accountCacheKey = $"account:{createdAccount.Id}";
 
+                // Armazena a conta individual no cache
                 await _cacheService.SetAsync(accountCacheKey, createdAccount);
+
+                // Atualiza o cache com a lista de contas
+                await _cacheService.UpdateAccountListCacheAsync(createdAccount);
             }
+
             return createdAccount;
         }
+
         public async Task<Account?> UpdateAccountAsync(Guid accountId, Dictionary<string, object> updatedFields)
         {
             var validationResult = _guidValidator.Validate(accountId);

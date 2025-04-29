@@ -2,13 +2,10 @@
 using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
-using FinancePlatform.API.Application.Services.Cache;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.ViewModel;
 using FluentValidation;
 using MapsterMapper;
-using Microsoft.Identity.Client;
-using System.Security.Principal;
 
 namespace FinancePlatform.API.Application.Services
 {

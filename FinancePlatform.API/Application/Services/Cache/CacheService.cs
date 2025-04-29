@@ -1,4 +1,5 @@
 ﻿using FinancePlatform.API.Application.Interfaces.Cache;
+using FinancePlatform.API.Domain.Entities;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
@@ -14,6 +15,27 @@ namespace FinancePlatform.API.Application.Services.Cache
         {
             _cache = cache;
             _cacheSettings = cacheSettings.Value;
+        }
+
+        public async Task UpdateAccountListCacheAsync(Account account)
+        {
+            string accountListCacheKey = "accounts:list";
+
+            // Tenta obter o cache da lista de contas
+            var cachedAccounts = await GetAsync<List<Account>>(accountListCacheKey);
+
+            // Se a lista estiver no cache, adiciona a nova conta
+            if (cachedAccounts != null)
+            {
+                cachedAccounts.Add(account);
+                await SetAsync(accountListCacheKey, cachedAccounts);
+            }
+            else
+            {
+                // Caso contrário, cria uma nova lista de contas e armazena
+                var newAccountList = new List<Account> { account };
+                await SetAsync(accountListCacheKey, newAccountList);
+            }
         }
 
         public async Task<T?> GetAsync<T>(string key)
@@ -44,15 +66,25 @@ namespace FinancePlatform.API.Application.Services.Cache
 
         public async Task SetAsync<T>(string key, T data, TimeSpan? expiration = null)
         {
-            // Criar a chave automaticamente caso ela não exista
             if (data == null)
             {
                 throw new ArgumentNullException(nameof(data), "Data cannot be null when setting cache.");
             }
 
+            Console.WriteLine($"Tempo de expiração recebido: {expiration}");
+            Console.WriteLine($"Tempo de expiração padrão configurado: {_cacheSettings.DefaultCacheExpirationMinutes}");
+
+            var cacheExpiration = expiration ?? TimeSpan.FromMinutes(_cacheSettings.DefaultCacheExpirationMinutes);
+
+            if (cacheExpiration <= TimeSpan.Zero)
+            {
+                Console.WriteLine("Corrigindo expiração para 1 minuto.");
+                cacheExpiration = TimeSpan.FromMinutes(1);
+            }
+
             var options = new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = expiration ?? TimeSpan.FromMinutes(_cacheSettings.DefaultCacheExpirationMinutes)
+                AbsoluteExpirationRelativeToNow = cacheExpiration
             };
 
             var serializedData = JsonSerializer.Serialize(data);

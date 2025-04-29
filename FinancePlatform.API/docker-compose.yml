@@ -1,20 +1,4 @@
 ﻿services:
-  mysql:
-    image: mysql:8
-    container_name: mysql_server
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: my_database
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - my_network
-
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq_server

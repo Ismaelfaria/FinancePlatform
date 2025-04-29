@@ -3,23 +3,17 @@ using FinancePlatform.API.Infrastructure.Messaging;
 using FinancePlatform.API.Infrastructure.Configurations;
 using FinancePlatform.API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationDependencies();
 
+var connectionString = builder.Configuration.GetConnectionString("MySQL");
 
 builder.Services.AddDbContext<FinanceDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()
-    )
-);
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-builder.Services.AddCustomDbContext(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddCacheConfiguration(builder.Configuration);

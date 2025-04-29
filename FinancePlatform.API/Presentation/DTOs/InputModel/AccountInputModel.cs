@@ -2,8 +2,8 @@
 {
     public class AccountInputModel
     {
-        public string HolderName { get; private set; }
-        public string AccountNumber { get; private set; }
-        public decimal Balance { get; private set; }
+        public string HolderName { get; set; }
+        public string AccountNumber { get; set; }
+        public decimal Balance { get; set; }
     }
 }

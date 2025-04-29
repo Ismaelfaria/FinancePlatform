@@ -1,7 +1,10 @@
-﻿namespace FinancePlatform.API.Application.Interfaces.Cache
+﻿using FinancePlatform.API.Domain.Entities;
+
+namespace FinancePlatform.API.Application.Interfaces.Cache
 {
     public interface ICacheService
     {
+        public Task UpdateAccountListCacheAsync(Account account);
         public Task<T?> GetAsync<T>(string key);
         public Task SetAsync<T>(string key, T data, TimeSpan? expiration = null);
         public Task RemoveAsync(string key);

@@ -15,6 +15,7 @@ using FluentValidation.AspNetCore;
 using FinancePlatform.API.Infrastructure.Persistence.Repositories;
 using FluentValidation;
 using MapsterMapper;
+using FinancePlatform.API.Presentation.DTOs.InputModel;
 
 namespace FinancePlatform.API.Infrastructure.Configurations
 {
