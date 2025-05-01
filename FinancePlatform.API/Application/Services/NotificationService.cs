@@ -1,4 +1,5 @@
-﻿using FinancePlatform.API.Application.Interfaces.Repositories;
+﻿using FinancePlatform.API.Application.Interfaces.Cache;
+using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Domain.Entities;
@@ -17,18 +18,22 @@ namespace FinancePlatform.API.Application.Services
         private readonly IValidator<Guid> _guidValidator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
+        private readonly ICacheRepository _cacheRepository;
+        private const string CACHE_COLLECTION_KEY = "_AllNotifications";
 
         public NotificationService(INotificationRepository notificationRepository, 
                                    IEntityUpdateStrategy entityUpdateStrategy,
                                    IValidator<Notification> validator,
                                    IValidator<Guid> guidValidator,
-                                   IMapper mapper)
+                                   IMapper mapper,
+                                   ICacheRepository cacheRepository)
         {
             _notificationRepository = notificationRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _guidValidator = guidValidator;
             _validator = validator;
             _mapper = mapper;
+            _cacheRepository = cacheRepository;
         }
 
         public async Task<NotificationViewModel?> FindNotificationByIdAsync(Guid notificationId)
@@ -36,22 +41,38 @@ namespace FinancePlatform.API.Application.Services
             var validationResult = _guidValidator.Validate(notificationId);
             if (!validationResult.IsValid) return null;
 
-            var existingNotification = await _notificationRepository.FindByIdAsync(notificationId);
-            if (existingNotification == null) return null;
+            var notification = await _cacheRepository.GetValue<NotificationViewModel>(notificationId);
+            if (notification == null)
+            {
+                var existingNotification = await _notificationRepository.FindByIdAsync(notificationId);
+                if (existingNotification == null) return null;
 
-            return _mapper.Map<NotificationViewModel>(existingNotification);
+                var notificationViewModel = _mapper.Map<NotificationViewModel>(existingNotification);
+                await _cacheRepository.SetValue(notificationId, notificationViewModel);
+                return notificationViewModel;
+            }
+            
+            return _mapper.Map<NotificationViewModel>(notification);
         }
 
         public async Task<List<NotificationViewModel>?> FindAllNotificationsAsync()
         {
-            var existingNotifications = await _notificationRepository.FindAllAsync();
-            
-            if (existingNotifications == null || existingNotifications.Count == 0)
+            var notifications = await _cacheRepository.GetCollection<NotificationViewModel>(CACHE_COLLECTION_KEY);
+
+            if (notifications == null || !notifications.Any()) 
             {
-                return null;
+                var existingNotifications = await _notificationRepository.FindAllAsync();
+                if (existingNotifications == null || existingNotifications.Count == 0)
+                {
+                    return null;
+                } 
+
+                var notificationViewModels = _mapper.Map<List<NotificationViewModel>>(existingNotifications);
+                await _cacheRepository.SetCollection(CACHE_COLLECTION_KEY, notificationViewModels);
+                return notificationViewModels;
             }
 
-            return _mapper.Map<List<NotificationViewModel>>(existingNotifications);
+            return _mapper.Map<List<NotificationViewModel>>(notifications);
         }
 
         public async Task<Notification?> CreateNotificationAsync(NotificationInputModel model)

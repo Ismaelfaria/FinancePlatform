@@ -26,7 +26,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PaymentViewModel>> GetById(Guid id)
         {
-            var payment = await _paymentService.GetPaymentByIdAsync(id);
+            var payment = await _paymentService.FindByIdAsync(id);
             if (payment == null)
                 return NotFound();
 
@@ -39,7 +39,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult<List<PaymentViewModel>>> GetAll()
         {
-            var payments = await _paymentService.GetAllPaymentsAsync();
+            var payments = await _paymentService.FindAllAsync();
             if (payments == null)
                 return NotFound("Nenhum pagamento encontrada.");
 

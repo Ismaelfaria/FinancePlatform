@@ -18,18 +18,22 @@ namespace FinancePlatform.API.Application.Services
         private readonly IValidator<Guid> _guidValidator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
+        private readonly ICacheRepository _cacheRepository;
+        private const string CACHE_COLLECTION_KEY = "_AllReconciliation";
 
         public ReconciliationService(IReconciliationRepository reconciliationRepository,
                                      IEntityUpdateStrategy entityUpdateStrategy,
                                      IValidator<Guid> guidValidator,
                                      IValidator<Reconciliation> validator,
-                                     IMapper mapper)
+                                     IMapper mapper,
+                                     ICacheRepository cacheRepository)
         {
             _reconciliationRepository = reconciliationRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _guidValidator = guidValidator;
             _validator = validator;
             _mapper = mapper;
+            _cacheRepository = cacheRepository;
         }
 
         public async Task<Reconciliation?> CreateReconciliation(ReconciliationInputModel model)
@@ -48,21 +52,42 @@ namespace FinancePlatform.API.Application.Services
             var validationResult = _guidValidator.Validate(reconciliationId);
             if (!validationResult.IsValid) return null;
 
-            var existingReconciliation = await _reconciliationRepository.FindByIdAsync(reconciliationId);
-            if (existingReconciliation == null)
+            var reconciliation = await _cacheRepository.GetValue<ReconciliationViewModel>(reconciliationId);
+
+            if (reconciliation == null)
             {
-                return null;
+                var existingReconciliation = await _reconciliationRepository.FindByIdAsync(reconciliationId);
+                if (existingReconciliation == null)
+                {
+                    return null;
+                }
+
+                var reconciliationViewModel = _mapper.Map<ReconciliationViewModel>(existingReconciliation);
+                await _cacheRepository.SetValue(reconciliationId, reconciliationViewModel);
+                return reconciliationViewModel;
             }
 
-            return _mapper.Map<ReconciliationViewModel>(existingReconciliation);
+            return _mapper.Map<ReconciliationViewModel>(reconciliation);
         }
 
         public async Task<List<ReconciliationViewModel>?> FindAllReconciliationsAsync()
         {
-            var existingReconciliation = await _reconciliationRepository.FindAllAsync();
-            if (existingReconciliation == null || existingReconciliation.Count == 0) return null;
+            var reconciliations = await _cacheRepository.GetCollection<ReconciliationViewModel>(CACHE_COLLECTION_KEY);
+            
+            if (reconciliations == null || !reconciliations.Any())
+            {
+                var existingReconciliation = await _reconciliationRepository.FindAllAsync();
+                if (existingReconciliation == null || existingReconciliation.Count == 0)
+                {
+                    return null;
+                }
 
-            return _mapper.Map<List<ReconciliationViewModel>>(existingReconciliation);
+                var reconciliationViewModels = _mapper.Map<List<ReconciliationViewModel>>(existingReconciliation);
+                await _cacheRepository.SetCollection(CACHE_COLLECTION_KEY, reconciliationViewModels);
+                return reconciliationViewModels;
+            }
+
+            return _mapper.Map<List<ReconciliationViewModel>>(reconciliations);
         }
 
         public async Task<Reconciliation?> UpdateReconciliationAsync(Guid reconciliationId, Dictionary<string, object> updateRequest)
