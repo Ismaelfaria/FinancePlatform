@@ -21,7 +21,7 @@ namespace FinancePlatform.API.Application.Services
         private readonly ICacheRepository _cacheRepository;
         private const string CACHE_COLLECTION_KEY = "_AllNotifications";
 
-        public NotificationService(INotificationRepository notificationRepository, 
+        public NotificationService(INotificationRepository notificationRepository,
                                    IEntityUpdateStrategy entityUpdateStrategy,
                                    IValidator<Notification> validator,
                                    IValidator<Guid> guidValidator,
@@ -36,7 +36,7 @@ namespace FinancePlatform.API.Application.Services
             _cacheRepository = cacheRepository;
         }
 
-        public async Task<NotificationViewModel?> FindNotificationByIdAsync(Guid notificationId)
+        public async Task<NotificationViewModel?> FindByIdAsync(Guid notificationId)
         {
             var validationResult = _guidValidator.Validate(notificationId);
             if (!validationResult.IsValid) return null;
@@ -51,21 +51,21 @@ namespace FinancePlatform.API.Application.Services
                 await _cacheRepository.SetValue(notificationId, notificationViewModel);
                 return notificationViewModel;
             }
-            
+
             return _mapper.Map<NotificationViewModel>(notification);
         }
 
-        public async Task<List<NotificationViewModel>?> FindAllNotificationsAsync()
+        public async Task<List<NotificationViewModel>?> FindAllAsync()
         {
             var notifications = await _cacheRepository.GetCollection<NotificationViewModel>(CACHE_COLLECTION_KEY);
 
-            if (notifications == null || !notifications.Any()) 
+            if (notifications == null || !notifications.Any())
             {
                 var existingNotifications = await _notificationRepository.FindAllAsync();
                 if (existingNotifications == null || existingNotifications.Count == 0)
                 {
                     return null;
-                } 
+                }
 
                 var notificationViewModels = _mapper.Map<List<NotificationViewModel>>(existingNotifications);
                 await _cacheRepository.SetCollection(CACHE_COLLECTION_KEY, notificationViewModels);
@@ -75,7 +75,7 @@ namespace FinancePlatform.API.Application.Services
             return _mapper.Map<List<NotificationViewModel>>(notifications);
         }
 
-        public async Task<Notification?> CreateNotificationAsync(NotificationInputModel model)
+        public async Task<Notification?> CreateAsync(NotificationInputModel model)
         {
             var notification = model.Adapt<Notification>();
             var validator = _validator.Validate(notification);
@@ -90,11 +90,9 @@ namespace FinancePlatform.API.Application.Services
         public async Task<Notification?> UpdateAsync(Guid notificationId, Dictionary<string, object> updateRequest)
         {
             var validationResult = _guidValidator.Validate(notificationId);
-
             if (!validationResult.IsValid) return null;
 
             var notification = await _notificationRepository.FindByIdAsync(notificationId);
-            
             if (notification == null) return null;
 
             var isUpdateSuccessful = _entityUpdateStrategy.UpdateEntityFields(notification, updateRequest);
@@ -106,14 +104,12 @@ namespace FinancePlatform.API.Application.Services
             return notification;
         }
 
-        public async Task<bool> DeleteNotificationAsync(Guid notificationId)
+        public async Task<bool> DeleteAsync(Guid notificationId)
         {
             var validationResult = _guidValidator.Validate(notificationId);
-
             if (!validationResult.IsValid) return false;
 
             var notification = await _notificationRepository.FindByIdAsync(notificationId);
-            
             if (notification == null) return false;
 
             _notificationRepository.Delete(notification);

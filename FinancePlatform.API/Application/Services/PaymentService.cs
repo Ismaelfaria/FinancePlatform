@@ -71,7 +71,7 @@ namespace FinancePlatform.API.Application.Services
             return _mapper.Map<List<PaymentViewModel>>(notifications);
         }
 
-        public async Task<Payment?> UpdatePaymentAsync(Guid paymentId, Dictionary<string, object> updateRequest)
+        public async Task<Payment?> UpdateAsync(Guid paymentId, Dictionary<string, object> updateRequest)
         {
             var validationResult = _guidValidator.Validate(paymentId);
 
@@ -91,7 +91,7 @@ namespace FinancePlatform.API.Application.Services
             return payment;
         }
 
-        public async Task<bool> DeletePaymentAsync(Guid paymentId)
+        public async Task<bool> DeleteAsync(Guid paymentId)
         {
             var validationResult = _guidValidator.Validate(paymentId);
 

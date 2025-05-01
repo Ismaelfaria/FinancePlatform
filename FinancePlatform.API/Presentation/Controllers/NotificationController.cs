@@ -22,7 +22,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<NotificationViewModel>> GetById(Guid id)
         {
-            var notification = await _notificationService.FindNotificationByIdAsync(id);
+            var notification = await _notificationService.FindByIdAsync(id);
             if (notification == null) 
                 return NotFound();
 
@@ -35,7 +35,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult<List<NotificationViewModel>>> GetAll()
         {
-            var notifications = await _notificationService.FindAllNotificationsAsync();
+            var notifications = await _notificationService.FindAllAsync();
             if (notifications == null) 
                 return NotFound("Nenhuma notificação encontrada.");
 
@@ -51,7 +51,7 @@ namespace FinancePlatform.API.Presentation.Controllers
             if (model == null)
                 return BadRequest("Dados inválidos.");
 
-            var createdNotification = await _notificationService.CreateNotificationAsync(model);
+            var createdNotification = await _notificationService.CreateAsync(model);
             if (createdNotification == null)
                 return BadRequest("Erro ao validar a notificação.");
 
@@ -80,7 +80,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _notificationService.DeleteNotificationAsync(id);
+            var success = await _notificationService.DeleteAsync(id);
             if (!success)
                 return NotFound();
 

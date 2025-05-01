@@ -6,10 +6,10 @@ namespace FinancePlatform.API.Application.Interfaces.Services
 {
     public interface IReconciliationService
     {
-        public Task<Reconciliation?> CreateReconciliation(ReconciliationInputModel reconciliation);
-        public Task<ReconciliationViewModel?> FindReconciliationByIdAsync(Guid id);
-        public Task<List<ReconciliationViewModel>?> FindAllReconciliationsAsync();
-        public Task<Reconciliation?> UpdateReconciliationAsync(Guid reconciliationId, Dictionary<string, object> updateRequest);
-        public Task<bool> DeleteReconciliationAsync(Guid reconciliationId);
+        public Task<Reconciliation?> CreateAsync(ReconciliationInputModel reconciliation);
+        public Task<ReconciliationViewModel?> FindByIdAsync(Guid id);
+        public Task<List<ReconciliationViewModel>?> FindAllAsync();
+        public Task<Reconciliation?> UpdateAsync(Guid reconciliationId, Dictionary<string, object> updateRequest);
+        public Task<bool> DeleteAsync(Guid reconciliationId);
     }
 }

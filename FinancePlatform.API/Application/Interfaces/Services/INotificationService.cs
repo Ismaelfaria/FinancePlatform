@@ -6,10 +6,10 @@ namespace FinancePlatform.API.Application.Interfaces.Services
 {
     public interface INotificationService
     {
-        public Task<NotificationViewModel?> FindNotificationByIdAsync(Guid idNotification);
-        public Task<List<NotificationViewModel>?> FindAllNotificationsAsync();
-        public Task<Notification?> CreateNotificationAsync(NotificationInputModel model);
+        public Task<NotificationViewModel?> FindByIdAsync(Guid idNotification);
+        public Task<List<NotificationViewModel>?> FindAllAsync();
+        public Task<Notification?> CreateAsync(NotificationInputModel model);
         public Task<Notification?> UpdateAsync(Guid notificationId, Dictionary<string, object> updateRequest);
-        public Task<bool> DeleteNotificationAsync(Guid id);
+        public Task<bool> DeleteAsync(Guid id);
     }
 }

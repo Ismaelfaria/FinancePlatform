@@ -35,7 +35,7 @@ namespace FinancePlatform.API.Application.Services
             _mapper = mapper;
             _cacheRepository = cacheRepository;
         }
-        public async Task<List<AccountViewModel>?> FindAllAccountsAsync()
+        public async Task<List<AccountViewModel>?> FindAllAsync()
         {
             var accounts = await _cacheRepository.GetCollection<AccountViewModel>(CACHE_COLLECTION_KEY);
 
@@ -75,9 +75,7 @@ namespace FinancePlatform.API.Application.Services
             return _mapper.Map<AccountViewModel>(account);
         }
 
-
-
-        public async Task<Account?> CreateAccountAsync(AccountInputModel model)
+        public async Task<Account?> CreateAsync(AccountInputModel model)
         {
             var account = model.Adapt<Account>();
             var validationResult = _validator.Validate(account);
@@ -90,7 +88,7 @@ namespace FinancePlatform.API.Application.Services
             return createdAccount;
         }
 
-        public async Task<Account?> UpdateAccountAsync(Guid accountId, Dictionary<string, object> updatedFields)
+        public async Task<Account?> UpdateAsync(Guid accountId, Dictionary<string, object> updatedFields)
         {
             var validationResult = _guidValidator.Validate(accountId);
 
@@ -106,7 +104,7 @@ namespace FinancePlatform.API.Application.Services
             }
             return account;
         }
-        public async Task<bool> DeleteAccountAsync(Guid accountId)
+        public async Task<bool> DeleteAsync(Guid accountId)
         {
             var validationResult = _guidValidator.Validate(accountId);
 

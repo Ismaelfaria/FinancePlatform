@@ -7,7 +7,7 @@ namespace FinancePlatform.API.Application.Interfaces.Services
     {
         public Task<PaymentViewModel?> FindByIdAsync(Guid id);
         public Task<List<PaymentViewModel>?> FindAllAsync();
-        public Task<Payment?> UpdatePaymentAsync(Guid paymentId, Dictionary<string, object> updateRequest);
-        public Task<bool> DeletePaymentAsync(Guid paymentId);
+        public Task<Payment?> UpdateAsync(Guid paymentId, Dictionary<string, object> updateRequest);
+        public Task<bool> DeleteAsync(Guid paymentId);
     }
 }

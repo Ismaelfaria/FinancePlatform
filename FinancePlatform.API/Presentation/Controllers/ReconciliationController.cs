@@ -26,7 +26,7 @@ namespace FinancePlatform.API.Presentation.Controllers
             if (model == null)
                 return BadRequest("Os dados da reconciliação são obrigatórios.");
 
-            var reconciliation = await _reconciliationService.CreateReconciliation(model);
+            var reconciliation = await _reconciliationService.CreateAsync(model);
             if (reconciliation == null)
                 return BadRequest("Não foi possível criar a reconciliação.");
 
@@ -39,7 +39,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ReconciliationViewModel>> GetById(Guid id)
         {
-            var reconciliation = await _reconciliationService.FindReconciliationByIdAsync(id);
+            var reconciliation = await _reconciliationService.FindByIdAsync(id);
             if (reconciliation == null)
                 return NotFound();
 
@@ -52,7 +52,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ReconciliationViewModel>>> GetAll()
         {
-            var reconciliations = await _reconciliationService.FindAllReconciliationsAsync();
+            var reconciliations = await _reconciliationService.FindAllAsync();
             return Ok(reconciliations);
         }
 
@@ -65,7 +65,7 @@ namespace FinancePlatform.API.Presentation.Controllers
             if (updateRequest == null || updateRequest.Count == 0)
                 return BadRequest("Nenhum dado fornecido para atualização.");
 
-            var updatedReconciliation = await _reconciliationService.UpdateReconciliationAsync(id, updateRequest);
+            var updatedReconciliation = await _reconciliationService.UpdateAsync(id, updateRequest);
             if (updatedReconciliation == null)
                 return NotFound();
 
@@ -78,7 +78,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _reconciliationService.DeleteReconciliationAsync(id);
+            var success = await _reconciliationService.DeleteAsync(id);
             if (!success)
                 return NotFound();
 

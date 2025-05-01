@@ -26,7 +26,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult<List<AccountViewModel>>> GetAllAccounts()
         {
-            var accounts = await _accountService.FindAllAccountsAsync();
+            var accounts = await _accountService.FindAllAsync();
             if (accounts == null) 
                 return NotFound("Nenhuma conta encontrada.");
 
@@ -52,7 +52,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpPost]
         public async Task<ActionResult<AccountViewModel>> CreateAccount([FromForm] AccountInputModel model)
         {
-            var createdAccount = await _accountService.CreateAccountAsync(model);
+            var createdAccount = await _accountService.CreateAsync(model);
             if (createdAccount == null) return BadRequest("Falha na validação dos dados.");
 
             return CreatedAtAction(nameof(GetAccountById), new { id = createdAccount.Id }, createdAccount);
@@ -67,7 +67,7 @@ namespace FinancePlatform.API.Presentation.Controllers
             if (updateRequest == null || updateRequest.Count == 0)
                 return BadRequest("Nenhum dado fornecido para atualização.");
 
-            var updatedAccount = await _accountService.UpdateAccountAsync(id, updateRequest);
+            var updatedAccount = await _accountService.UpdateAsync(id, updateRequest);
             if (updatedAccount == null) return NotFound("Conta não encontrada.");
 
             return Ok(updatedAccount);
@@ -79,7 +79,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAccount([FromForm] Guid id)
         {
-            var deleted = await _accountService.DeleteAccountAsync(id);
+            var deleted = await _accountService.DeleteAsync(id);
             if (!deleted) return NotFound("Conta não encontrada.");
 
             return NoContent();

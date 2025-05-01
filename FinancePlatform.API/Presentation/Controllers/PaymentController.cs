@@ -71,7 +71,7 @@ namespace FinancePlatform.API.Presentation.Controllers
             if (updateRequest == null || updateRequest.Count == 0)
                 return BadRequest("Nenhum dado fornecido para atualização.");
 
-            var updatedPayment = await _paymentService.UpdatePaymentAsync(id, updateRequest);
+            var updatedPayment = await _paymentService.UpdateAsync(id, updateRequest);
             if (updatedPayment == null)
                 return NotFound();
 
@@ -84,7 +84,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _paymentService.DeletePaymentAsync(id);
+            var success = await _paymentService.DeleteAsync(id);
             if (!success)
                 return NotFound();
 
