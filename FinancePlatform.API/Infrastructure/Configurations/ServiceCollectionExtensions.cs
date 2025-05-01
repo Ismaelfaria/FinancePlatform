@@ -33,20 +33,6 @@ namespace FinancePlatform.API.Infrastructure.Configurations
             });
             return services;
         }
-
-        public static IServiceCollection AddCacheConfiguration(this IServiceCollection services, IConfiguration configuration)
-        {
-            var redisConnection = configuration.GetValue<string>("RedisCacheSettings:RedisConnection");
-            var instanceName = configuration.GetValue<string>("RedisCacheSettings:InstanceName");
-
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = redisConnection;  
-                options.InstanceName = instanceName;      
-            });
-
-            return services;
-        }
     }
 }
         

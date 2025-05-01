@@ -2,7 +2,6 @@
 using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
-using FinancePlatform.API.Application.Services.Cache;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.InputModel;
 using FinancePlatform.API.Presentation.DTOs.ViewModel;
@@ -19,72 +18,63 @@ namespace FinancePlatform.API.Application.Services
         private readonly IValidator<Guid> _guidValidator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
-        private readonly ICacheService _cacheService;
+        private readonly ICacheRepository _cacheRepository;
+        private const string CACHE_COLLECTION_KEY = "_AllAccounts";
 
         public AccountService(IAccountRepository accountRepository,
                               IEntityUpdateStrategy entityUpdateStrategy,
                               IValidator<Account> validator,
                               IValidator<Guid> guidValidator,
                               IMapper mapper,
-                              ICacheService cacheService)
+                              ICacheRepository cacheRepository)
         {
             _accountRepository = accountRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _validator = validator;
             _guidValidator = guidValidator;
             _mapper = mapper;
-            _cacheService = cacheService;
+            _cacheRepository = cacheRepository;
         }
         public async Task<List<AccountViewModel>?> FindAllAccountsAsync()
         {
-            string accountListCacheKey = "accounts:list";
+            var accounts = await _cacheRepository.GetCollection<AccountViewModel>(CACHE_COLLECTION_KEY);
 
-            // Tenta obter a lista de contas do cache
-            var cachedAccounts = await _cacheService.GetAsync<List<Account>>(accountListCacheKey);
-            if (cachedAccounts != null)
+            if (accounts == null || !accounts.Any())
             {
-                // Retorna a lista de contas mapeada para AccountViewModel
-                return _mapper.Map<List<AccountViewModel>>(cachedAccounts);
+                var existingAccounts = await _accountRepository.FindAllAsync();
+                if (existingAccounts == null || existingAccounts.Count == 0)
+                {
+                    return null;
+                }
+
+                var accountViewModels = _mapper.Map<List<AccountViewModel>>(existingAccounts);
+                await _cacheRepository.SetCollection(CACHE_COLLECTION_KEY, accountViewModels);
+                return accountViewModels;
             }
 
-            // Caso o cache não exista, busca as contas do repositório
-            var existingAccounts = await _accountRepository.FindAllAsync();
-            if (existingAccounts == null || existingAccounts.Count == 0)
-            {
-                return null;
-            }
-
-            // Armazena a lista de contas no cache
-            await _cacheService.SetAsync(accountListCacheKey, existingAccounts);
-
-            // Retorna a lista de contas mapeada para AccountViewModel
-            return _mapper.Map<List<AccountViewModel>>(existingAccounts);
+            return _mapper.Map<List<AccountViewModel>>(accounts);
         }
-
 
         public async Task<AccountViewModel?> FindByIdAsync(Guid accountId)
         {
             var validationResult = _guidValidator.Validate(accountId);
-
             if (!validationResult.IsValid) return null;
 
-            string accountCacheKey = $"account:{accountId}";
+            var account = await _cacheRepository.GetValue<AccountViewModel>(accountId);
 
-            var cachedAccount = await _cacheService.GetAsync<Account>(accountCacheKey);
-            
-            if (cachedAccount != null)
+            if (account == null)
             {
-                return _mapper.Map<AccountViewModel>(cachedAccount);
+                var existingAccount = await _accountRepository.FindByIdAsync(accountId);
+                if (existingAccount == null) return null;
+
+                var accountViewModel = _mapper.Map<AccountViewModel>(existingAccount);
+                await _cacheRepository.SetValue(accountId, accountViewModel);
+                return accountViewModel;
             }
 
-            var existingAccount = await _accountRepository.FindByIdAsync(accountId);
-            
-            if (existingAccount == null) return null;
-
-            await _cacheService.SetAsync(accountCacheKey, existingAccount);
-
-            return _mapper.Map<AccountViewModel>(existingAccount);
+            return _mapper.Map<AccountViewModel>(account);
         }
+
 
 
         public async Task<Account?> CreateAccountAsync(AccountInputModel model)
@@ -95,20 +85,7 @@ namespace FinancePlatform.API.Application.Services
             if (!validationResult.IsValid)
                 return null;
 
-            // Adiciona a conta ao repositório
             var createdAccount = await _accountRepository.AddAsync(account);
-
-            if (createdAccount != null)
-            {
-                // Chaves específicas para a conta criada
-                string accountCacheKey = $"account:{createdAccount.Id}";
-
-                // Armazena a conta individual no cache
-                await _cacheService.SetAsync(accountCacheKey, createdAccount);
-
-                // Atualiza o cache com a lista de contas
-                await _cacheService.UpdateAccountListCacheAsync(createdAccount);
-            }
 
             return createdAccount;
         }
@@ -120,17 +97,12 @@ namespace FinancePlatform.API.Application.Services
             if (!validationResult.IsValid) return null;
 
             var account = await _accountRepository.FindByIdAsync(accountId);
-
             if (account == null) return null;
 
             var isUpdateSuccessful = _entityUpdateStrategy.UpdateEntityFields(account, updatedFields);
-            
-            if(isUpdateSuccessful)
+            if (isUpdateSuccessful)
             {
                 await _accountRepository.UpdateAsync(account);
-
-                string accountCacheKey = $"account:{accountId}";
-                await _cacheService.UpdateCacheIfNeededAsync(accountCacheKey, account);
             }
             return account;
         }
@@ -141,13 +113,10 @@ namespace FinancePlatform.API.Application.Services
             if (!validationResult.IsValid) return false;
 
             var account = await _accountRepository.FindByIdAsync(accountId);
-            
+
             if (account == null) return false;
 
             _accountRepository.Delete(account);
-
-            string accountCacheKey = $"account:{accountId}";
-            await _cacheService.RemoveFromCacheIfNeededAsync<Account>(accountCacheKey);
 
             return true;
         }

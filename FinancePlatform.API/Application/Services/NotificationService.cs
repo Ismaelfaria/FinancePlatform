@@ -1,8 +1,6 @@
-﻿using FinancePlatform.API.Application.Interfaces.Cache;
-using FinancePlatform.API.Application.Interfaces.Repositories;
+﻿using FinancePlatform.API.Application.Interfaces.Repositories;
 using FinancePlatform.API.Application.Interfaces.Services;
 using FinancePlatform.API.Application.Interfaces.Utils;
-using FinancePlatform.API.Application.Services.Cache;
 using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.InputModel;
 using FinancePlatform.API.Presentation.DTOs.ViewModel;
@@ -19,66 +17,39 @@ namespace FinancePlatform.API.Application.Services
         private readonly IValidator<Guid> _guidValidator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
-        private readonly ICacheService _cacheService;
 
         public NotificationService(INotificationRepository notificationRepository, 
                                    IEntityUpdateStrategy entityUpdateStrategy,
                                    IValidator<Notification> validator,
                                    IValidator<Guid> guidValidator,
-                                   IMapper mapper,
-                                   ICacheService cacheService)
+                                   IMapper mapper)
         {
             _notificationRepository = notificationRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _guidValidator = guidValidator;
             _validator = validator;
             _mapper = mapper;
-            _cacheService = cacheService;
         }
 
         public async Task<NotificationViewModel?> FindNotificationByIdAsync(Guid notificationId)
         {
             var validationResult = _guidValidator.Validate(notificationId);
-
             if (!validationResult.IsValid) return null;
 
-            string notificationCacheKey = $"account:{notificationId}";
-
-            var cachedNotification = await _cacheService.GetAsync<Account>(notificationCacheKey);
-            
-            if (cachedNotification != null)
-            {
-                return _mapper.Map<NotificationViewModel>(cachedNotification);
-            }
-
             var existingNotification = await _notificationRepository.FindByIdAsync(notificationId);
-
             if (existingNotification == null) return null;
-
-            await _cacheService.SetAsync(notificationCacheKey, existingNotification);
 
             return _mapper.Map<NotificationViewModel>(existingNotification);
         }
 
         public async Task<List<NotificationViewModel>?> FindAllNotificationsAsync()
         {
-            string notificationListCacheKey = "notifications:list";
-
-            var cachedNotifications = await _cacheService.GetAsync<List<Account>>(notificationListCacheKey);
-            
-            if (cachedNotifications != null)
-            {
-                return _mapper.Map<List<NotificationViewModel>>(cachedNotifications);
-            }
-
             var existingNotifications = await _notificationRepository.FindAllAsync();
             
             if (existingNotifications == null || existingNotifications.Count == 0)
             {
                 return null;
             }
-
-            await _cacheService.SetAsync(notificationListCacheKey, existingNotifications);
 
             return _mapper.Map<List<NotificationViewModel>>(existingNotifications);
         }
@@ -92,12 +63,6 @@ namespace FinancePlatform.API.Application.Services
 
             var createdNotification = await _notificationRepository.Add(notification);
 
-            if (createdNotification != null)
-            {
-                string accountCacheKey = $"notification:{createdNotification.Id}";
-
-                await _cacheService.SetAsync(accountCacheKey, createdNotification);
-            }
             return notification;
         }
 
@@ -116,9 +81,6 @@ namespace FinancePlatform.API.Application.Services
             if (isUpdateSuccessful)
             {
                 await _notificationRepository.Update(notification);
-                
-                string accountCacheKey = $"notification:{notificationId}";
-                await _cacheService.UpdateCacheIfNeededAsync(accountCacheKey, notification);
             }
             return notification;
         }
@@ -134,9 +96,6 @@ namespace FinancePlatform.API.Application.Services
             if (notification == null) return false;
 
             _notificationRepository.Delete(notification);
-
-            string notificationCacheKey = $"notification:{notificationId}";
-            await _cacheService.RemoveFromCacheIfNeededAsync<Notification>(notificationCacheKey);
 
             return true;
         }

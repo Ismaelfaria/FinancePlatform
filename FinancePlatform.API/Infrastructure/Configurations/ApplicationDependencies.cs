@@ -5,17 +5,13 @@ using FinancePlatform.API.Application.Interfaces.UseCases;
 using FinancePlatform.API.Application.Interfaces.Utils;
 using FinancePlatform.API.Application.Interfaces.Validator;
 using FinancePlatform.API.Application.Services;
-using FinancePlatform.API.Application.Services.Cache;
 using FinancePlatform.API.Application.UseCases;
 using FinancePlatform.API.Application.Utils;
 using FinancePlatform.API.Application.Validators;
 using FinancePlatform.API.Domain.Entities;
-using FinancePlatform.API.Infrastructure.Persistence;
-using FluentValidation.AspNetCore;
 using FinancePlatform.API.Infrastructure.Persistence.Repositories;
 using FluentValidation;
-using MapsterMapper;
-using FinancePlatform.API.Presentation.DTOs.InputModel;
+using FinancePlatform.API.Infrastructure.Persistence.Cache;
 
 namespace FinancePlatform.API.Infrastructure.Configurations
 {
@@ -51,12 +47,9 @@ namespace FinancePlatform.API.Infrastructure.Configurations
             services.AddTransient<IValidatorDebitAndWithdraw, ValidatorDebitAndWithdraw>();
 
             // Cache
-            services.AddScoped<ICacheService, CacheService>(); 
-            
+            services.AddScoped<ICacheRepository, RedisRepository>();
+
             services.AddValidatorsFromAssemblyContaining<Program>();
-
-
-
         }
     }
 }

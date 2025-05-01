@@ -14,9 +14,16 @@ var connectionString = builder.Configuration.GetConnectionString("MySQL");
 builder.Services.AddDbContext<FinanceDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+var redisConnection = builder.Configuration.GetConnectionString("RedisConnection");
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.InstanceName = "RedisInstance";
+    options.Configuration = redisConnection;
+});
+
 builder.Services.AddApplicationDependencies();
 builder.Services.AddSwaggerConfiguration();
-builder.Services.AddCacheConfiguration(builder.Configuration);
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -25,7 +32,6 @@ builder.Services.RegisterMaps();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
