@@ -62,7 +62,7 @@ namespace FinancePlatform.API.Application.Services
             if (notifications == null || !notifications.Any())
             {
                 var existingNotifications = await _notificationRepository.FindAllAsync();
-                if (existingNotifications == null || existingNotifications.Count == 0)
+                if (existingNotifications == null || !existingNotifications.Any())
                 {
                     return null;
                 }
@@ -75,14 +75,14 @@ namespace FinancePlatform.API.Application.Services
             return _mapper.Map<List<NotificationViewModel>>(notifications);
         }
 
-        public async Task<Notification?> CreateAsync(NotificationInputModel model)
+        public async Task<Notification?> AddAsync(NotificationInputModel model)
         {
             var notification = model.Adapt<Notification>();
             var validator = _validator.Validate(notification);
 
             if (!validator.IsValid) return null;
 
-            var createdNotification = await _notificationRepository.Add(notification);
+            var createdNotification = await _notificationRepository.AddAsync(notification);
 
             return notification;
         }
@@ -99,7 +99,7 @@ namespace FinancePlatform.API.Application.Services
 
             if (isUpdateSuccessful)
             {
-                await _notificationRepository.Update(notification);
+                await _notificationRepository.UpdateAsync(notification);
             }
             return notification;
         }

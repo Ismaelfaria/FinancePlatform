@@ -1,6 +1,6 @@
 ﻿using Mapster;
 
-namespace FinancePlatform.API.Application.Mapper
+namespace FinancePlatform.API.Infrastructure.Configurations.Mapper
 {
     public static class MappingConfigurations
     {

@@ -18,19 +18,19 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
             return await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<List<Account>> FindAllAsync()
+        public async Task<IEnumerable<Account>?> FindAllAsync()
         {
             return await _context.Accounts.ToListAsync();
         }
 
-        public async Task<Account> AddAsync(Account account)
+        public async Task<Account?> AddAsync(Account account)
         {
             await _context.Accounts.AddAsync(account);
             await _context.SaveChangesAsync();
             return account;
         }
 
-        public async Task<Account> UpdateAsync(Account account)
+        public async Task<Account?> UpdateAsync(Account account)
         {
             _context.Accounts.Update(account);
             await _context.SaveChangesAsync();

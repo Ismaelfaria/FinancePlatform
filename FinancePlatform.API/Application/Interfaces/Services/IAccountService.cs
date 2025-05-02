@@ -1,15 +1,10 @@
-﻿using FinancePlatform.API.Domain.Entities;
+﻿using FinancePlatform.API.Application.Interfaces.Repositories;
+using FinancePlatform.API.Domain.Entities;
 using FinancePlatform.API.Presentation.DTOs.InputModel;
 using FinancePlatform.API.Presentation.DTOs.ViewModel;
 
 namespace FinancePlatform.API.Application.Interfaces.Services
 {
-    public interface IAccountService
-    {
-        public Task<List<AccountViewModel>?> FindAllAsync();
-        public Task<AccountViewModel?> FindByIdAsync(Guid id);
-        public Task<Account?> CreateAsync(AccountInputModel model);
-        public Task<Account?> UpdateAsync(Guid notificationId, Dictionary<string, object> updateRequest);
-        public Task<bool> DeleteAsync(Guid accountId);
-    } 
+    public interface IAccountService : IGenericService<AccountViewModel, AccountInputModel, Account>
+    {}
 }

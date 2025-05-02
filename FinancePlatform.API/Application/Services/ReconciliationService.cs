@@ -36,7 +36,7 @@ namespace FinancePlatform.API.Application.Services
             _cacheRepository = cacheRepository;
         }
 
-        public async Task<Reconciliation?> CreateAsync(ReconciliationInputModel model)
+        public async Task<Reconciliation?> AddAsync(ReconciliationInputModel model)
         {
             var reconciliation = model.Adapt<Reconciliation>();
 
@@ -78,7 +78,7 @@ namespace FinancePlatform.API.Application.Services
             if (reconciliations == null || !reconciliations.Any())
             {
                 var existingReconciliation = await _reconciliationRepository.FindAllAsync();
-                if (existingReconciliation == null || existingReconciliation.Count == 0)
+                if (existingReconciliation == null || !existingReconciliation.Any())
                 {
                     return null;
                 }

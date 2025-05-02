@@ -42,7 +42,7 @@ namespace FinancePlatform.API.Application.Services
             if (accounts == null || !accounts.Any())
             {
                 var existingAccounts = await _accountRepository.FindAllAsync();
-                if (existingAccounts == null || existingAccounts.Count == 0)
+                if (existingAccounts == null || !existingAccounts.Any())
                 {
                     return null;
                 }
@@ -75,7 +75,7 @@ namespace FinancePlatform.API.Application.Services
             return _mapper.Map<AccountViewModel>(account);
         }
 
-        public async Task<Account?> CreateAsync(AccountInputModel model)
+        public async Task<Account?> AddAsync(AccountInputModel model)
         {
             var account = model.Adapt<Account>();
             var validationResult = _validator.Validate(account);

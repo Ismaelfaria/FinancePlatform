@@ -58,7 +58,7 @@ namespace FinancePlatform.API.Application.Services
             if (notifications == null || !notifications.Any())
             {
                 var existingPayments = await _paymentRepository.FindAllAsync();
-                if (existingPayments == null || existingPayments.Count == 0)
+                if (existingPayments == null || !existingPayments.Any())
                 {
                     return null;
                 }

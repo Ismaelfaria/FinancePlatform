@@ -13,24 +13,24 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<Notification> FindByIdAsync(Guid id)
+        public async Task<Notification?> FindByIdAsync(Guid id)
         {
             return await _context.Notifications.FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<List<Notification>> FindAllAsync()
+        public async Task<IEnumerable<Notification>?> FindAllAsync()
         {
             return await _context.Notifications.ToListAsync();
         }
 
-        public async Task<Notification> Add(Notification notification)
+        public async Task<Notification?> AddAsync(Notification notification)
         {
             _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
             return notification;
         }
 
-        public async Task<Notification> Update(Notification notification)
+        public async Task<Notification?> UpdateAsync(Notification notification)
         {
             _context.Notifications.Update(notification);
             await _context.SaveChangesAsync();

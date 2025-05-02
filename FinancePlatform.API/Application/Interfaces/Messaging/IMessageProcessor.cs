@@ -2,6 +2,6 @@
 {
     public interface IMessageProcessor
     {
-        public bool PublishMessage(string exchange, string routingKey, string message);
+        bool PublishMessage(string exchange, string routingKey, string message);
     }
 }

@@ -52,7 +52,7 @@ namespace FinancePlatform.API.Presentation.Controllers
         [HttpPost]
         public async Task<ActionResult<AccountViewModel>> CreateAccount([FromForm] AccountInputModel model)
         {
-            var createdAccount = await _accountService.CreateAsync(model);
+            var createdAccount = await _accountService.AddAsync(model);
             if (createdAccount == null) return BadRequest("Falha na validação dos dados.");
 
             return CreatedAtAction(nameof(GetAccountById), new { id = createdAccount.Id }, createdAccount);

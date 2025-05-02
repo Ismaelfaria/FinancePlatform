@@ -51,7 +51,7 @@ namespace FinancePlatform.API.Presentation.Controllers
             if (model == null)
                 return BadRequest("Dados inválidos.");
 
-            var createdNotification = await _notificationService.CreateAsync(model);
+            var createdNotification = await _notificationService.AddAsync(model);
             if (createdNotification == null)
                 return BadRequest("Erro ao validar a notificação.");
 

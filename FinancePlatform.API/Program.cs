@@ -1,29 +1,18 @@
-using FinancePlatform.API.Application.Mapper;
 using FinancePlatform.API.Infrastructure.Messaging;
 using FinancePlatform.API.Infrastructure.Configurations;
 using FinancePlatform.API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using FinancePlatform.API.Infrastructure.Configurations.Mapper;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApplicationDependencies();
-
-var connectionString = builder.Configuration.GetConnectionString("MySQL");
-
-builder.Services.AddDbContext<FinanceDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-var redisConnection = builder.Configuration.GetConnectionString("RedisConnection");
-
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.InstanceName = "RedisInstance";
-    options.Configuration = redisConnection;
-});
+builder.Services
+    .AddMySqlConfiguration(builder.Configuration)
+    .AddRedisCacheConfiguration(builder.Configuration)
+    .AddSwaggerConfiguration();
 
 builder.Services.AddApplicationDependencies();
-builder.Services.AddSwaggerConfiguration();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

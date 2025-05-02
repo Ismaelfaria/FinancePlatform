@@ -1,12 +1,12 @@
 ﻿
+using FinancePlatform.API.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace FinancePlatform.API.Infrastructure.Configurations
 {
     public static class ServiceCollectionExtensions
     {
-         
-        
         public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
@@ -31,6 +31,29 @@ namespace FinancePlatform.API.Infrastructure.Configurations
                     c.IncludeXmlComments(xmlPath);
                 }
             });
+            return services;
+        }
+
+        public static IServiceCollection AddMySqlConfiguration(this IServiceCollection services, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("MySQL");
+
+            services.AddDbContext<FinanceDbContext>(options =>
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+            return services;
+        }
+
+        public static IServiceCollection AddRedisCacheConfiguration(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisConnection = configuration.GetConnectionString("RedisConnection");
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.InstanceName = "RedisInstance";
+                options.Configuration = redisConnection;
+            });
+
             return services;
         }
     }

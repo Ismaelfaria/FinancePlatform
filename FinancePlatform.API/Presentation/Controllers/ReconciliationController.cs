@@ -26,7 +26,7 @@ namespace FinancePlatform.API.Presentation.Controllers
             if (model == null)
                 return BadRequest("Os dados da reconciliação são obrigatórios.");
 
-            var reconciliation = await _reconciliationService.CreateAsync(model);
+            var reconciliation = await _reconciliationService.AddAsync(model);
             if (reconciliation == null)
                 return BadRequest("Não foi possível criar a reconciliação.");
 
