@@ -2,10 +2,10 @@
 {
     public class Account
     {
-        public Guid Id { get; private set; }
-        public string HolderName { get; private set; }
-        public string AccountNumber { get; private set; }
-        public decimal Balance { get; private set; }
+        public Guid Id { get; set; }
+        public string HolderName { get; set; }
+        public string AccountNumber { get; set; }
+        public decimal Balance { get; set; }
 
         public Account(){}
 
