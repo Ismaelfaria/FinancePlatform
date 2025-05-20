@@ -18,6 +18,7 @@ namespace FinancePlatform.API.Application.Services
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IValidator<Account> _validator;
+        private readonly IValidator<AccountInputModel> _validatorAccountInputModel;
         private readonly IValidator<Guid> _guidValidator;
         private readonly IEntityUpdateStrategy _entityUpdateStrategy;
         private readonly IMapper _mapper;
@@ -27,6 +28,7 @@ namespace FinancePlatform.API.Application.Services
         public AccountService(IAccountRepository accountRepository,
                               IEntityUpdateStrategy entityUpdateStrategy,
                               IValidator<Account> validator,
+                              IValidator<AccountInputModel> validatorAccountInputModel,
                               IValidator<Guid> guidValidator,
                               IMapper mapper,
                               ICacheRepository cacheRepository)
@@ -34,6 +36,7 @@ namespace FinancePlatform.API.Application.Services
             _accountRepository = accountRepository;
             _entityUpdateStrategy = entityUpdateStrategy;
             _validator = validator;
+            _validatorAccountInputModel = validatorAccountInputModel;
             _guidValidator = guidValidator;
             _mapper = mapper;
             _cacheRepository = cacheRepository;
@@ -80,11 +83,12 @@ namespace FinancePlatform.API.Application.Services
 
         public async Task<Account?> AddAsync(AccountInputModel model)
         {
-            var account = model.Adapt<Account>();
-            var validationResult = _validator.Validate(account);
+            var validationResult = _validatorAccountInputModel.Validate(model);
 
-            if (!validationResult.IsValid)
+            if (validationResult != null)
                 return null;
+
+            var account = model.Adapt<Account>();
 
             var createdAccount = await _accountRepository.AddAsync(account);
 

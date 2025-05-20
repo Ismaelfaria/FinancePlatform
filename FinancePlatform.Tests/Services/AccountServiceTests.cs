@@ -14,6 +14,7 @@ public class AccountServiceTests
 {
     private readonly Mock<IAccountRepository> _accountRepositoryMock;
     private readonly Mock<IValidator<Account>> _validatorMock;
+    private readonly Mock<IValidator<AccountInputModel>> _validatorMockAccountInputModel;
     private readonly Mock<IValidator<Guid>> _guidValidatorMock;
     private readonly Mock<IEntityUpdateStrategy> _entityUpdateStrategyMock;
     private readonly Mock<IMapper> _mapperMock;
@@ -26,15 +27,18 @@ public class AccountServiceTests
     {
         _accountRepositoryMock = new Mock<IAccountRepository>();
         _validatorMock = new Mock<IValidator<Account>>();
+        _validatorMockAccountInputModel = new Mock<IValidator<AccountInputModel>>();
         _guidValidatorMock = new Mock<IValidator<Guid>>();
         _entityUpdateStrategyMock = new Mock<IEntityUpdateStrategy>();
         _mapperMock = new Mock<IMapper>();
         _cacheRepositoryMock = new Mock<ICacheRepository>();
 
+
         _accountService = new AccountService(
             _accountRepositoryMock.Object,
             _entityUpdateStrategyMock.Object,
             _validatorMock.Object,
+            _validatorMockAccountInputModel.Object,
             _guidValidatorMock.Object,
             _mapperMock.Object,
             _cacheRepositoryMock.Object
@@ -175,7 +179,7 @@ public class AccountServiceTests
 
         _guidValidatorMock.Setup(v => v.Validate(accountId)).Returns(validResult);
         _cacheRepositoryMock.Setup(c => c.GetValue<AccountViewModel>(accountId)).ReturnsAsync(cached);
-        _mapperMock.Setup(m => m.Map<AccountViewModel>(cached)).Returns(cached); 
+        _mapperMock.Setup(m => m.Map<AccountViewModel>(cached)).Returns(cached);
 
         var result = await _accountService.FindByIdAsync(accountId);
 
@@ -184,4 +188,106 @@ public class AccountServiceTests
 
         _accountRepositoryMock.Verify(r => r.FindByIdAsync(It.IsAny<Guid>()), Times.Never);
     }
+
+    [Fact]
+    public async Task AddAsync_ValidAccount_ShouldAddAndReturnViewModel()
+    {
+        var inputModel = new AccountInputModel
+        {
+            HolderName = "New User",
+            AccountNumber = "12345678910",
+            Balance = 100.0m
+        };
+
+        var accountEntity = new Account
+        {
+            Id = Guid.NewGuid(),
+            HolderName = "New User",
+            AccountNumber = "12345678910",
+            Balance = 100.0m
+        };
+
+        _mapperMock.Setup(m => m.Map<Account>(inputModel)).Returns(accountEntity);
+
+
+        _validatorMock.Setup(v => v.Validate(accountEntity))
+              .Returns(new ValidationResult());
+
+        _accountRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Account>()))
+              .ReturnsAsync((Account a) => a);
+
+        var result = await _accountService.AddAsync(inputModel);
+
+        Assert.NotNull(result);
+        Assert.Equal(accountEntity.HolderName, result.HolderName);
+    }
+    
+    [Fact]
+    public async Task AddAsync_InvalidAccount_ShouldReturnNull()
+    {
+        // Arrange
+        var inputModel = new AccountInputModel
+        {
+            HolderName = "",
+            AccountNumber = "abc",
+            Balance = -1000m
+        };
+
+        var accountEntity = new Account
+        {
+            HolderName = inputModel.HolderName,
+            AccountNumber = inputModel.AccountNumber,
+            Balance = inputModel.Balance
+        };
+
+        var invalidResult = new ValidationResult(new List<ValidationFailure>
+        {
+            new ValidationFailure("HolderName", "Required"),
+            new ValidationFailure("Balance", "Must be positive")
+        });
+
+        _mapperMock.Setup(m => m.Map<Account>(inputModel)).Returns(accountEntity);
+        _validatorMock.Setup(v => v.Validate(accountEntity)).Returns(invalidResult);
+
+        // Act
+        var result = await _accountService.AddAsync(inputModel);
+
+        // Assert
+        Assert.Null(result);
+        _accountRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Account>()), Times.Never);
+    }
+    /*
+    [Fact]
+    public async Task AddAsync_ShouldReturnNull_WhenRepositoryFailsToAdd()
+    {
+        // Arrange
+        var inputModel = new AccountInputModel
+        {
+            HolderName = "Test",
+            AccountNumber = "111222333",
+            Balance = 100
+        };
+
+        var accountEntity = new Account
+        {
+            HolderName = inputModel.HolderName,
+            AccountNumber = inputModel.AccountNumber,
+            Balance = inputModel.Balance
+        };
+
+        var validationResult = new ValidationResult();
+
+        _mapperMock.Setup(m => m.Map<Account>(inputModel)).Returns(accountEntity);
+        _validatorMock.Setup(v => v.Validate(accountEntity)).Returns(validationResult);
+
+        // Simula falha no AddAsync
+        _accountRepositoryMock.Setup(r => r.AddAsync(accountEntity)).ReturnsAsync((Account?)null);
+
+        // Act
+        var result = await _accountService.AddAsync(inputModel);
+
+        // Assert
+        Assert.Null(result);
+    }
+    */
 }

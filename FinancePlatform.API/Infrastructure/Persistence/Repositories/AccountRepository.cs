@@ -23,7 +23,7 @@ namespace FinancePlatform.API.Infrastructure.Persistence.Repositories
             return await _context.Accounts.ToListAsync();
         }
 
-        public async Task<Account?> AddAsync(Account account)
+        public async Task<Account> AddAsync(Account account)
         {
             await _context.Accounts.AddAsync(account);
             await _context.SaveChangesAsync();
