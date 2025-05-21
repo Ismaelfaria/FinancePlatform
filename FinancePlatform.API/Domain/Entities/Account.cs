@@ -1,4 +1,5 @@
-﻿using FinancePlatform.API.Domain.ValueObjects;
+﻿using FinancePlatform.API.Domain.Enums;
+using FinancePlatform.API.Domain.ValueObjects;
 
 namespace FinancePlatform.API.Domain.Entities
 {
@@ -13,9 +14,10 @@ namespace FinancePlatform.API.Domain.Entities
         public DateTime CreatedAt { get; private set; }           
         public decimal Balance { get; private set; }             
         public bool IsActive { get; private set; }                 
-        //public AccountType Type { get; private set; }            
+        public AccountType Type { get; private set; }            
 
-        public Account(string holderName, string documentNumber, string branchCode, string bankCode, /*AccountType type*/ decimal initialBalance)
+        public Account(string holderName, string documentNumber, string branchCode
+                       ,string bankCode, AccountType type, decimal initialBalance)
         {
             if (string.IsNullOrWhiteSpace(holderName))
                 throw new ArgumentException("Holder name is required.");
@@ -28,7 +30,7 @@ namespace FinancePlatform.API.Domain.Entities
             BranchCode = branchCode;
             BankCode = bankCode;
             AccountNumber = GenerateRandom6DigitNumber();
-            //Type = type;
+            Type = type;
             Balance = initialBalance;
             CreatedAt = DateTime.UtcNow;
             IsActive = true;
@@ -36,14 +38,6 @@ namespace FinancePlatform.API.Domain.Entities
 
         public Account(){
             Id = Guid.NewGuid();
-        }
-
-        public Account(string holderName, string accountNumber, decimal initialBalance)
-        {
-            Id = Guid.NewGuid();
-            AccountNumber = GenerateRandom6DigitNumber();
-            HolderName = holderName;
-            Balance = initialBalance;
         }
 
         private string DocumentNumberFormat(string numberDocument)

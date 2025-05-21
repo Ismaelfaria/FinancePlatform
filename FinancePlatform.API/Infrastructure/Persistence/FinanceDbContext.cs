@@ -16,12 +16,16 @@ namespace FinancePlatform.API.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
+
+        
+
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.HasKey(a => a.Id);
                 entity.Property(a => a.HolderName).IsRequired().HasMaxLength(100);
                 entity.Property(a => a.AccountNumber).IsRequired().HasMaxLength(20);
                 entity.Property(a => a.Balance).HasPrecision(18, 2); 
+                entity.Property(a => a.Type).HasConversion<string>();
             });
 
             modelBuilder.Entity<Payment>(entity =>
