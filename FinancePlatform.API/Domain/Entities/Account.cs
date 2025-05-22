@@ -6,7 +6,8 @@ namespace FinancePlatform.API.Domain.Entities
     public class Account
     {
         public Guid Id { get; private set; }
-        public string HolderName { get; private set; }          
+        public string HolderName { get; private set; }
+        public ContactInformation ContactInformations { get; set; }
         public int AccountNumber { get; private set; }              
         public string BranchCode { get; private set; }             
         public string BankCode { get; private set; }               
@@ -17,7 +18,8 @@ namespace FinancePlatform.API.Domain.Entities
         public AccountType Type { get; private set; }            
 
         public Account(string holderName, string documentNumber, string branchCode
-                       ,string bankCode, AccountType type, decimal initialBalance)
+                       ,string bankCode, AccountType type, decimal initialBalance,
+                        ContactInformation contactInformations)
         {
             if (string.IsNullOrWhiteSpace(holderName))
                 throw new ArgumentException("Holder name is required.");
@@ -26,6 +28,7 @@ namespace FinancePlatform.API.Domain.Entities
 
             Id = Guid.NewGuid();
             HolderName = holderName;
+            ContactInformations = contactInformations;
             DocumentNumber = DocumentNumberFormat(documentNumber);
             BranchCode = branchCode;
             BankCode = bankCode;
